@@ -6,6 +6,12 @@
 <title>مركز اللياقة والصحة</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
+
+
+
+
+
+
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
 body{
   min-height:100vh; display:flex;
@@ -112,7 +118,18 @@ button:hover{transform:scale(1.05); background:#ff8787;}
 
 
 
+/* زر طائر */
+.toggle-btn {
+  animation: floatBtn 4s ease-in-out infinite;
+}
 
+@keyframes floatBtn {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(15px, -10px); }
+  50%  { transform: translate(0, -20px); }
+  75%  { transform: translate(-15px, -10px); }
+  100% { transform: translate(0, 0); }
+}
 
 
 
@@ -435,61 +452,205 @@ window.addEventListener("load", ()=>{
 
 
 
-<!-- Banner أسفل الشاشة -->
-<a href="https://wa.me/201207982437" target="_blank" class="ad-banner-bottom">
-  <span>اعلانك هنا</span>
-</a>
+
+
+
+
+
+
+
+<!-- زر الوضع الليلي -->
+<button id="darkModeBtn" style="border:none; background:none; cursor:pointer; position:relative; width:60px; height:60px;">
+  <!-- الشمس -->
+  <svg id="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="orange"
+       style="position:absolute; top:0; left:0; width:60px; height:60px; transition: transform 0.5s, opacity 0.5s;">
+    <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.636 5.636l-1.768-1.768m14.264 14.264l-1.768-1.768M18.364 5.636l1.768-1.768M5.636 18.364l-1.768 1.768M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+  </svg>
+
+  <!-- القمر -->
+  <svg id="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="yellow"
+       style="position:absolute; top:0; left:0; width:60px; height:60px; transition: transform 0.5s, opacity 0.5s; opacity:0;">
+    <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+  </svg>
+</button>
 
 <style>
-.ad-banner-bottom{
-  display:block;
-  width:100%;        /* ممتد بالكامل عرض الشاشة */
-  padding:15px 0;
-  background: linear-gradient(270deg, #ff6a00, #ff0066, #00c6ff, #6a11cb);
-  background-size:800% 800%;
-  text-align:center;
-  color:white;
-  font-size:24px;
-  font-weight:bold;
-  text-decoration:none;
-  box-shadow:0 -5px 20px rgba(0,0,0,0.3);
-  animation: slideGradient 5s linear infinite, bounce 2s ease-in-out infinite;
-  position:fixed;
-  bottom:0;
-  left:0;
-  z-index:9999;
-  border-top-left-radius:15px;
-  border-top-right-radius:15px;
+  body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+    transition: background-color 0.5s, color 0.5s;
+  }
+
+  /* حركة الطيران */
+  #darkModeBtn.animate {
+    animation: fly 0.8s ease forwards;
+  }
+
+  @keyframes fly {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(20deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('darkModeBtn');
+  const sun = document.getElementById('sun');
+  const moon = document.getElementById('moon');
+
+  // تحقق من الوضع السابق للمستخدم
+  if(localStorage.getItem('darkMode') === 'enabled'){
+    document.body.classList.add('dark-mode');
+    sun.style.opacity = '0';
+    moon.style.opacity = '1';
+  }
+
+  btn.addEventListener('click', () => {
+    // إضافة أنيميشن الطيران
+    btn.classList.add('animate');
+    setTimeout(() => btn.classList.remove('animate'), 800);
+
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+
+    if(isDark){
+      sun.style.opacity = '0';
+      moon.style.opacity = '1';
+      moon.style.transform = 'rotate(360deg)';
+      localStorage.setItem('darkMode','enabled');
+    } else {
+      sun.style.opacity = '1';
+      moon.style.opacity = '0';
+      sun.style.transform = 'rotate(0deg)';
+      localStorage.setItem('darkMode','disabled');
+    }
+  });
+
+
+
 }
 
-.ad-banner-bottom span{
-  display:inline-block;
-  animation: scaleText 1s ease-in-out infinite alternate;
+function showNotification(message){
+  const notify = document.getElementById('topNotify');
+  notify.innerHTML = `<div class="notify-box">${message}</div>`;
+  notify.classList.add('show');
+  setTimeout(()=>{notify.classList.remove('show');}, 2500);
 }
 
-@keyframes slideGradient{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
+
+
+
+
+
+</script>
+
+
+
+
+
+
+<!-- زر الوضع الداكن -->
+<div class="dark-toggle" id="darkToggle" title="الوضع الداكن">
+  <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFA500" width="24" height="24">
+    <circle cx="12" cy="12" r="5"/>
+    <g stroke="#FFA500" stroke-width="2">
+      <line x1="12" y1="1" x2="12" y2="4"/>
+      <line x1="12" y1="20" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/>
+      <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="4" y2="12"/>
+      <line x1="20" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/>
+      <line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+    </g>
+  </svg>
+  <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFF" width="24" height="24">
+    <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 0012 21a9 9 0 009-8.21z"/>
+  </svg>
+</div>
+
+<style>
+/* زر الوضع الداكن */
+.dark-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 55px;
+  height: 55px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9999;
+  transition: 0.3s;
+}
+.dark-toggle:hover {
+  transform: scale(1.1);
+  background: rgba(255,255,255,0.4);
+}
+.dark-toggle svg {
+  position: absolute;
+  transition: 0.5s;
+}
+.dark-toggle .moon {
+  opacity: 0;
+  transform: scale(0.5);
+}
+body.dark .dark-toggle .sun {
+  opacity: 0;
+  transform: scale(0.5);
+}
+body.dark .dark-toggle .moon {
+  opacity: 1;
+  transform: scale(1);
 }
 
-@keyframes bounce{
-  0%,100%{transform: translateY(0);}
-  50%{transform: translateY(-5px);}
+/* وضع داكن للموقع */
+body.dark {
+  background: #121212 !important;
+  color: #eee !important;
 }
+body.dark input, body.dark select, body.dark button, body.dark .results {
+  background: rgba(255,255,255,0.05);
+  color: #eee;
+}
+body.dark button:hover {
+  background: rgba(255,255,255,0.2);
+}
+</style>
 
-@keyframes scaleText{
-  0%{transform: scale(1);}
-  100%{transform: scale(1.2);}
+<script>
+// Dark mode toggle
+const darkToggle = document.getElementById('darkToggle');
+const currentTheme = localStorage.getItem('theme');
+if(currentTheme === 'dark') document.body.classList.add('dark');
+
+darkToggle.addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+  if(document.body.classList.contains('dark')){
+    localStorage.setItem('theme','dark');
+  } else {
+    localStorage.setItem('theme','light');
+  }
+});
+</script>
+
+
+
+
+
+<style>
+body, .content, .sidebar, .page, input, select, button, .results {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 </style>
 
 
 
 
-
-
-
-  
 </body>
-</html>
+        </html>
