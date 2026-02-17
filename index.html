@@ -198,6 +198,7 @@ button:hover{transform:scale(1.05); background:#ff8787;}
 
 <li onclick="showPage('foodCalc')">حاسبة القيمة الغذائية</li>
 
+
 </ul>
 </div>
 
@@ -668,6 +669,64 @@ body, .content, .sidebar, .page, input, select, button, .results {
   <input type="number" id="foodQty" placeholder="الكمية (جرام)">
   <button onclick="calculateFood()">احسب القيمة الغذائية</button>
   <div class="results" id="foodResults"></div>
+
+
+<button class="blur-btn" onclick="location.href='ai.html'"><span>جرب ميزه الذكاء الاصطناعي</span></button>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+.blur-btn {
+  padding: 20px 50px;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* تأثير الألوان المتحركة */
+.blur-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, #ff3cac, #784ba0, #2b86c5, #ff3cac);
+  animation: animate 4s linear infinite;
+  filter: blur(30px);
+  z-index: 0;
+}
+
+@keyframes animate {
+  0% { transform: rotate(0deg) translate(0,0); }
+  50% { transform: rotate(180deg) translate(0,0); }
+  100% { transform: rotate(360deg) translate(0,0); }
+}
+
+/* النص فوق الزر */
+.blur-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* تأثير عند المرور على الزر */
+.blur-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+</style>
+
+
 </div>
 
 <script>
@@ -768,4 +827,3 @@ function calculateFood() {
 
 </body>
 </html>
-
