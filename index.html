@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Calzy OS | مدربك الذكي</title>
-    <meta name="description" content="نظام ذكي متكامل لحساب سعراتك وماكروز جسمك بدقة، مع تصفير تلقائي يومياً.">
-    <meta property="og:title" content="Calzy OS 2026">
-    <meta property="og:description" content="تتبع وجباتك وحقق هدفك البدني بسهولة.">
-    <meta property="og:image" content="https://i.ibb.co/v4mYpXF/calzy-logo.png">
-    <link rel="icon" type="image/png" href="https://i.ibb.co/v4mYpXF/calzy-logo.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --p: #8b5cf6; --s: #10b981; --bg: #05070a; --card: #111827; --text: #f9fafb; --d: #ef4444;
+            --p: #8b5cf6; --s: #10b981; --bg: #05070a; --card: #111827; --text: #f9fafb; --d: #ef4444; --w: #3b82f6;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 90px; }
@@ -22,19 +15,28 @@
 
         .setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
         
-        .main-display { position: relative; width: 240px; height: 240px; margin: 0 auto 30px; display: flex; justify-content: center; align-items: center; }
-        svg { transform: rotate(-90deg); width: 240px; height: 240px; }
+        /* Progress Circle */
+        .main-display { position: relative; width: 220px; height: 220px; margin: 0 auto 30px; display: flex; justify-content: center; align-items: center; }
+        svg { transform: rotate(-90deg); width: 220px; height: 220px; }
         circle { fill: none; stroke-width: 15; stroke-linecap: round; }
         .track { stroke: rgba(255,255,255,0.05); }
-        .progress { stroke: var(--p); stroke-dasharray: 691; stroke-dashoffset: 691; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 0 10px var(--p)); }
+        .progress { stroke: var(--p); stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 0 8px var(--p)); }
         .inner-content { position: absolute; text-align: center; }
-        .inner-content h2 { font-size: 45px; font-weight: 900; line-height: 1; }
+        .inner-content h2 { font-size: 40px; font-weight: 900; line-height: 1; }
 
         .glass-card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 20px; margin-bottom: 15px; }
-        .macro-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .macro-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .macro-box { text-align: center; background: rgba(255,255,255,0.02); padding: 12px 5px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); }
-        .macro-box b { font-size: 15px; color: var(--s); display: block; }
+        .macro-box b { font-size: 14px; color: var(--s); display: block; }
         .macro-box small { color: #94a3b8; font-size: 11px; }
+
+        /* Water Section Styles */
+        .water-card { background: linear-gradient(145deg, #111827, #0f172a); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .water-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .water-bar-bg { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .water-bar-fill { height: 100%; background: var(--w); width: 0%; transition: 0.5s ease; box-shadow: 0 0 10px var(--w); }
+        .water-btn { background: var(--w); border: none; color: white; padding: 8px 15px; border-radius: 12px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .water-btn:active { transform: scale(0.9); }
 
         input, select { width: 100%; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; }
         .btn-p { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: var(--p); color: white; cursor: pointer; }
@@ -51,7 +53,7 @@
         .modal-inner { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .tool-card { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .tool-card { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; text-decoration: none; color: inherit; }
         .tool-icon { font-size: 24px; background: var(--card); padding: 10px; border-radius: 12px; }
     </style>
 </head>
@@ -86,7 +88,7 @@
 
     <div id="home-page">
         <div class="main-display">
-            <svg><circle class="track" cx="120" cy="120" r="110"></circle><circle id="progCircle" class="progress" cx="120" cy="120" r="110"></circle></svg>
+            <svg><circle class="track" cx="110" cy="110" r="100"></circle><circle id="progCircle" class="progress" cx="110" cy="110" r="100"></circle></svg>
             <div class="inner-content"><p style="color:#94a3b8; font-size:14px">المتبقي</p><h2 id="calRem">0</h2><small id="calTotal" style="font-size:10px; color:#6b7280"></small></div>
         </div>
 
@@ -94,6 +96,20 @@
             <div class="macro-box"><small>بروتين</small><b id="pVal">0/0</b></div>
             <div class="macro-box"><small>كارب</small><b id="cbVal">0/0</b></div>
             <div class="macro-box"><small>دهون</small><b id="fVal">0/0</b></div>
+        </div>
+
+        <div class="glass-card water-card">
+            <div class="water-header">
+                <div>
+                    <span style="font-size: 18px;">💧 الماء</span>
+                    <div id="waterText" style="font-size: 12px; color: #94a3b8;">شربت: 0 / 3 لتر</div>
+                </div>
+                <button class="water-btn" onclick="addWater(0.25)">+ 250ml</button>
+            </div>
+            <div class="water-bar-bg">
+                <div id="waterBar" class="water-bar-fill"></div>
+            </div>
+            <p id="waterGoalMsg" style="font-size: 10px; color: var(--s); text-align: center; display: none;">أحسنت! وصلت لهدفك اليومي 🚀</p>
         </div>
 
         <div class="glass-card">
@@ -104,37 +120,20 @@
 
     <div id="services-page" class="hidden">
         <h3 style="margin-bottom: 20px;">الخدمات 🛠️</h3>
-        <div class="tool-card" onclick="alert('احتياج الماء: ' + (userDB.userW * 0.04).toFixed(1) + ' لتر/يوم لنمط حياة رياضي')"><div class="tool-icon">💧</div><div><b>حاسبة الماء الرياضية</b><br><small style="color:#94a3b8">أكثر دقة للرياضيين</small></div></div>
+        <div class="tool-card" onclick="alert('احتياج الماء: ' + (userDB.userW * 0.04).toFixed(1) + ' لتر/يوم لنمط حياة رياضي')">
+            <div class="tool-icon">💧</div>
+            <div><b>حاسبة الماء الرياضية</b><br><small style="color:#94a3b8">أكثر دقة للرياضيين</small></div>
+        </div>
        
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-        <div class="tool-card" onclick="alert('ماكروزك محسوب بنسبة بروتين عالية (2.2g لكل كيلو) لدعم العضلات')"><div class="tool-icon">⚡</div><div><b>نظام الماكروز الذكي</b><br><small style="color:#94a3b8">تحليل توزيع المغذيات</small></div></div>
+        <div class="tool-card" onclick="alert('ماكروزك محسوب بنسبة بروتين عالية (2.2g لكل كيلو) لدعم العضلات')">
+            <div class="tool-icon">⚡</div>
+            <div><b>نظام الماكروز الذكي</b><br><small style="color:#94a3b8">تحليل توزيع المغذيات</small></div>
+        </div>
    
-   
-<a href="exercises.html">
-    
-    
-    <div class="tool-card"><div class="tool-icon">💪</div><div><b>  تمرينات</b><br><small style="color:#94a3b8"> نظام تمرين معتمد  </small></div></div>
-    
-    
-    
-</a>
-
-
-
-
-
-
-   
+        <a href="exercises.html" class="tool-card">
+            <div class="tool-icon">💪</div>
+            <div><b>تمرينات</b><br><small style="color:#94a3b8">نظام تمرين معتمد</small></div>
+        </a>
     </div>
 </div>
 
@@ -158,7 +157,7 @@
 </nav>
 
 <script>
-    let userDB = { setup: false, current: {c:0, p:0, cb:0, f:0}, logs: [], date: "", userW:0, userH:0, goalType: "" };
+    let userDB = { setup: false, current: {c:0, p:0, cb:0, f:0}, water: 0, logs: [], date: "", userW:0, userH:0, goalType: "" };
 
     function finishSetup() {
         const name = document.getElementById('setupName').value, 
@@ -170,13 +169,11 @@
 
         if(!name || !w || !h) return alert("أكمل البيانات");
 
-        // معادلة سعرات متقدمة
         let bmr = (10 * w) + (6.25 * h) - (5 * a);
         bmr = (g === 'male') ? bmr + 5 : bmr - 161;
         let tdee = bmr * 1.55; 
         if(goal === 'cut') tdee -= 500; else if(goal === 'bulk') tdee += 400;
 
-        // حساب ماكروز احترافي (عالي البروتين)
         let proteinG = w * 2.2; 
         let fatsG = w * 0.8;
         let remainingCals = tdee - (proteinG * 4) - (fatsG * 9);
@@ -185,7 +182,7 @@
         userDB = {
             setup: true, name, goalType: goal, userW: w, userH: h,
             goals: { c: Math.round(tdee), p: Math.round(proteinG), cb: Math.round(carbG), f: Math.round(fatsG) },
-            current: {c:0, p:0, cb:0, f:0}, logs: [], date: new Date().toLocaleDateString()
+            current: {c:0, p:0, cb:0, f:0}, water: 0, logs: [], date: new Date().toLocaleDateString()
         };
         saveData(); location.reload();
     }
@@ -193,8 +190,32 @@
     function checkDailyReset() {
         const today = new Date().toLocaleDateString();
         if (userDB.setup && userDB.date !== today) {
-            userDB.current = {c:0, p:0, cb:0, f:0}; userDB.logs = [];
+            userDB.current = {c:0, p:0, cb:0, f:0}; 
+            userDB.water = 0; 
+            userDB.logs = [];
             userDB.date = today; saveData();
+        }
+    }
+
+    function addWater(amount) {
+        userDB.water += amount;
+        if(userDB.water > 5) userDB.water = 5; // حد أقصى للعرض فقط
+        updateWaterUI();
+        saveData();
+    }
+
+    function updateWaterUI() {
+        const target = 3;
+        const percent = (userDB.water / target) * 100;
+        document.getElementById('waterBar').style.width = Math.min(percent, 100) + "%";
+        document.getElementById('waterText').innerText = `شربت: ${userDB.water.toFixed(2)} / ${target} لتر`;
+        
+        if(userDB.water >= target) {
+            document.getElementById('waterGoalMsg').style.display = "block";
+            document.getElementById('waterBar').style.background = "var(--s)";
+        } else {
+            document.getElementById('waterGoalMsg').style.display = "none";
+            document.getElementById('waterBar').style.background = "var(--w)";
         }
     }
 
@@ -211,21 +232,32 @@
         document.getElementById('greetUser').innerHTML = `أهلاً، <span style="color:var(--p)">${userDB.name}</span>`;
         const goalsMap = { cut: "تنشيف 🔥", maintain: "ثبات ⚖️", bulk: "تضخيم 💪" };
         document.getElementById('statusTag').innerText = goalsMap[userDB.goalType];
+        
+        // Calories Progress
         document.getElementById('calRem').innerText = Math.max(0, userDB.goals.c - userDB.current.c);
         document.getElementById('calTotal').innerText = `هدف اليوم: ${userDB.goals.c}`;
-        const offset = 691 - (Math.min(userDB.current.c / userDB.goals.c, 1) * 691);
+        const offset = 628 - (Math.min(userDB.current.c / userDB.goals.c, 1) * 628);
         document.getElementById('progCircle').style.strokeDashoffset = offset;
+        
+        // Macros
         document.getElementById('pVal').innerText = `${Math.round(userDB.current.p)}/${userDB.goals.p}g`;
         document.getElementById('cbVal').innerText = `${Math.round(userDB.current.cb)}/${userDB.goals.cb}g`;
         document.getElementById('fVal').innerText = `${Math.round(userDB.current.f)}/${userDB.goals.f}g`;
+        
+        // Water
+        updateWaterUI();
+
+        // Logs
         document.getElementById('logsList').innerHTML = userDB.logs.map((item, i) => `
             <div class="log-item"><div><b>${item.n}</b><br><small>${item.c} سعر</small></div>
             <div class="del-btn" onclick="removeMeal(${i})">🗑️</div></div>`).reverse().join('') || '<p style="text-align:center; color:#4b5563; font-size:12px">أضف وجبتك الأولى</p>';
     }
 
     function confirmAdd() {
-        const n = document.getElementById('inN').value || "وجبة", c = parseFloat(document.getElementById('inC').value) || 0,
-              p = parseFloat(document.getElementById('inP').value) || 0, cb = parseFloat(document.getElementById('inCB').value) || 0,
+        const n = document.getElementById('inN').value || "وجبة", 
+              c = parseFloat(document.getElementById('inC').value) || 0,
+              p = parseFloat(document.getElementById('inP').value) || 0, 
+              cb = parseFloat(document.getElementById('inCB').value) || 0,
               f = parseFloat(document.getElementById('inF').value) || 0;
         userDB.current.c += c; userDB.current.p += p; userDB.current.cb += cb; userDB.current.f += f;
         userDB.logs.push({n, c, p, cb, f}); saveData(); renderApp(); closeAdd();
