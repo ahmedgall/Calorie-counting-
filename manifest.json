@@ -3,7 +3,7 @@
   "short_name": "Calzy",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#05070a",
+  "background_color": "#000000",
   "theme_color": "#8b5cf6",
   "icons": [
     {
