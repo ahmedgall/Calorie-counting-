@@ -10,7 +10,7 @@
             --p: #8b5cf6; --s: #10b981; --bg: #05070a; --card: #111827; --text: #f9fafb; --d: #ef4444; --w: #3b82f6; --cr: #f59e0b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; overscroll-behavior-y: contain; }
         .container { max-width: 450px; margin: 0 auto; padding: 20px; }
 
         /* Setup Style */
@@ -18,7 +18,7 @@
         
         /* Progress Circle */
         .main-display { position: relative; width: 220px; height: 220px; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
-        svg { transform: rotate(-90deg); width: 220px; height: 220px; }
+        svg.progress-svg { transform: rotate(-90deg); width: 220px; height: 220px; }
         circle { fill: none; stroke-width: 15; stroke-linecap: round; }
         .track { stroke: rgba(255,255,255,0.05); }
         .progress { stroke: var(--p); stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s ease; filter: drop-shadow(0 0 8px var(--p)); }
@@ -42,83 +42,60 @@
         input, select { width: 100%; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; }
         .btn-p { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: var(--p); color: white; cursor: pointer; }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11, 15, 26, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1f2937; z-index: 1000; }
-        .nav-item { color: #4b5563; font-size: 24px; cursor: pointer; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11, 15, 26, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; padding: 15px; border-top: 1px solid #1f2937; z-index: 1000; }
+        .nav-item { color: #4b5563; width: 28px; height: 28px; cursor: pointer; transition: 0.3s; }
         .nav-item.active { color: var(--p); }
+        .nav-add { background: var(--p); color: white; width: 45px; height: 45px; border-radius: 15px; padding: 8px; display: flex; justify-content: center; align-items: center; }
 
         .hidden { display: none; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: flex-end; }
         .modal-inner { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
     
-    
-    /* تنسيق اسم المستخدم الاحترافي */
-.user-name-style {
-    background: linear-gradient(120deg, #8b5cf6, #d8b4fe, #8b5cf6);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900;
-    text-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-    animation: shine 3s linear infinite;
-    display: inline-block;
-}
+        .user-name-style { background: linear-gradient(120deg, #8b5cf6, #d8b4fe, #8b5cf6); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; animation: shine 3s linear infinite; display: inline-block; }
+        @keyframes shine { to { background-position: 200% center; } }
 
-/* حركة اللمعان */
-@keyframes shine {
-    to { background-position: 200% center; }
-}
-
-    
-   
-   
-   
-   
+        /* PWA Banner */
+        #pwa-install-banner { position: fixed; bottom: 85px; left: 20px; right: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px; padding: 12px; z-index: 900; display: none; align-items: center; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .pwa-content { display: flex; align-items: center; gap: 10px; }
+        .pwa-content img { width: 40px; height: 40px; border-radius: 8px; }
+        #pwa-install-btn { background: #000; color: #fff; border: 1px solid var(--p); padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
     </style>
     
-    
-    
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#8b5cf6">
-<script>
-  if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
-
-    
-
+    <meta name="theme-color" content="#8b5cf6">
 </head>
+
 <body>
 
-<div id="setupLayer" class="setup-overlay hidden">
-    <h1 style="text-align: center; margin-bottom: 20px;">CALZY <span style="color:var(--p)">2026</span></h1>
-    <input type="text" id="setupName" placeholder="الاسم">
-    <select id="setupGender">
-        <option value="male">ذكر</option>
-        <option value="female">أنثى</option>
-    </select>
-    <div style="display: flex; gap: 10px;">
-        <input type="number" id="setupW" placeholder="الوزن (كجم)">
-        <input type="number" id="setupH" placeholder="الطول (سم)">
+<div id="pwa-install-banner">
+    <div class="pwa-content">
+        <img src="icon-192.png" alt="Logo">
+        <div><strong style="font-size: 13px; color: #fff; display: block;">تثبيت Calzy OS</strong><small style="color: #94a3b8; font-size: 10px;">لسهولة الاستخدام السريع</small></div>
     </div>
+    <button id="pwa-install-btn">تثبيت</button>
+</div>
+
+<div id="setupLayer" class="setup-overlay hidden">
+    <h1 style="text-align: center; margin-bottom: 20px; font-weight: 900;">CALZY <span style="color:var(--p)">2026</span></h1>
+    <input type="text" id="setupName" placeholder="الاسم">
+    <select id="setupGender"><option value="male">ذكر</option><option value="female">أنثى</option></select>
+    <div style="display: flex; gap: 10px;"><input type="number" id="setupW" placeholder="الوزن (كجم)"><input type="number" id="setupH" placeholder="الطول (سم)"></div>
     <input type="number" id="setupA" placeholder="العمر">
-    <select id="setupGoal">
-        <option value="cut">تنشيف 🔥 (عجز 500)</option>
-        <option value="maintain" selected>ثبات ⚖️</option>
-        <option value="bulk">تضخيم 💪 (زيادة 300)</option>
-    </select>
+    <select id="setupGoal"><option value="cut">تنشيف (عجز 500)</option><option value="maintain" selected>ثبات</option><option value="bulk">تضخيم (زيادة 300)</option></select>
     <button class="btn-p" onclick="finishSetup()">حساب السعرات بدقة ✅</button>
 </div>
 
 <div class="container" id="mainApp">
     <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
         <h2 id="greetUser">مرحباً</h2>
-        <div onclick="resetSystem()" style="cursor:pointer; font-size: 20px;">⚙️</div>
+        <div onclick="resetSystem()" style="cursor:pointer; width: 24px; height: 24px; color: #4b5563;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </div>
     </header>
 
     <div id="home-page">
         <div class="main-display">
-            <svg><circle class="track" cx="110" cy="110" r="100"></circle><circle id="progCircle" class="progress" cx="110" cy="110" r="100"></circle></svg>
+            <svg class="progress-svg"><circle class="track" cx="110" cy="110" r="100"></circle><circle id="progCircle" class="progress" cx="110" cy="110" r="100"></circle></svg>
             <div class="inner-content"><p style="color:#94a3b8; font-size:12px">المتبقي</p><h2 id="calRem">0</h2><small id="calTotal" style="font-size:10px; color:#6b7280"></small></div>
         </div>
 
@@ -130,7 +107,7 @@
 
         <div class="glass-card">
             <div style="display:flex; justify-content:space-between; align-items:center">
-                <span>💧 الماء <small id="wTxt" style="color:var(--w)">0/3 L</small></span>
+                <span><svg style="width:16px; height:16px; display:inline; vertical-align:middle; color:var(--w)" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1.323l.395.072 4 4 .707.707a1 1 0 01-1.414 1.414L14 9.828V15a2 2 0 01-2 2H8a2 2 0 01-2-2V9.828l-.707.707a1 1 0 01-1.414-1.414l4.707-4.707V3a1 1 0 011-1z"></path></svg> الماء <small id="wTxt" style="color:var(--w)">0/3 L</small></span>
                 <button class="btn-add" style="background:var(--w)" onclick="addTrack('water', 0.25)">+ ربع لتر</button>
             </div>
             <div class="prog-bg"><div id="wBar" class="prog-fill" style="background:var(--w)"></div></div>
@@ -138,50 +115,75 @@
 
         <div class="glass-card">
             <div style="display:flex; justify-content:space-between; align-items:center">
-                <span>💊 كرياتين <small id="crTxt" style="color:var(--cr)">0/5 g</small></span>
+                <span><svg style="width:16px; height:16px; display:inline; vertical-align:middle; color:var(--cr)" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg> كرياتين <small id="crTxt" style="color:var(--cr)">0/5 g</small></span>
                 <button class="btn-add" style="background:var(--cr)" onclick="addTrack('creatine', 5)">+ 5 جرام</button>
             </div>
             <div class="prog-bg"><div id="crBar" class="prog-fill" style="background:var(--cr)"></div></div>
         </div>
 
         <div class="glass-card">
-            <h4 style="margin-bottom:10px">💊 الفيتامينات</h4>
+            <h4 style="margin-bottom:10px; display:flex; align-items:center; gap:8px;"><svg style="width:18px; height:18px; color:var(--p)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19.423 15.641a7 7 0 11-14.846 0 7 7 0 0114.846 0z"></path><path d="M12 8v4l3 3"></path></svg> الفيتامينات</h4>
             <div id="vitList"></div>
         </div>
     </div>
 
     <div id="services-page" class="hidden">
-        <h3 style="margin-bottom: 15px;">الخدمات 🛠️</h3>
+        <h3 style="margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+            <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            الخدمات المتقدمة
+        </h3>
         <a href="exercises.html" style="text-decoration:none; color:inherit">
             <div class="glass-card" style="display:flex; align-items:center; gap:15px">
-                <div style="font-size:30px">💪</div>
-                <div><b>تمارين مخصصة</b><br><small style="color:#94a3b8">اضغط للدخول لجدول التمرين</small></div>
+                <div style="width:40px; height:40px; color:var(--p)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                <div><b>تمارين مخصصة</b><br><small style="color:#94a3b8">جدول تمارينك العلمي</small></div>
             </div>
         </a>
     </div>
 </div>
 
 <div id="addModal" class="modal"><div class="modal-inner">
-    <h3>إضافة وجبة</h3>
+    <h3>إضافة وجبة ذكية</h3>
     <input type="text" id="inN" placeholder="اسم الوجبة">
     <input type="number" id="inC" placeholder="السعرات">
     <div style="display: flex; gap: 8px;"><input type="number" id="inP" placeholder="بروتين"><input type="number" id="inCB" placeholder="كارب"><input type="number" id="inF" placeholder="دهون"></div>
-    <button class="btn-p" onclick="confirmAdd()">إضافة ✅</button>
-    <button onclick="closeAdd()" style="width:100%; margin-top:10px; background:none; border:none; color:#6b7280;">إلغاء</button>
+    <button class="btn-p" onclick="confirmAdd()">إضافة السجلات ✅</button>
+    <button onclick="closeAdd()" style="width:100%; margin-top:10px; background:none; border:none; color:#6b7280;">إغلاق</button>
 </div></div>
 
 <nav>
-    <div class="nav-item active" id="n-home" onclick="showPage('home')">🏠</div>
-    <div class="nav-item" onclick="openAdd()">➕</div>
-    <div class="nav-item" id="n-serv" onclick="showPage('services')">🛠️</div>
+    <div class="nav-item active" id="n-home" onclick="showPage('home')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+    </div>
+    <div class="nav-item nav-add" onclick="openAdd()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+    </div>
+    <div class="nav-item" id="n-serv" onclick="showPage('services')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+    </div>
 </nav>
 
 <script>
-    let db = {
-        setup: false, current: {c:0, p:0, cb:0, f:0}, 
-        water: 0, creatine: 0, vits: {omega3: false, multi: false, d3: false},
-        logs: [], date: ""
-    };
+    let db = { setup: false, current: {c:0, p:0, cb:0, f:0}, water: 0, creatine: 0, vits: {omega3: false, multi: false, d3: false}, logs: [], date: "" };
+
+    // PWA Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('pwa-install-banner').style.display = 'flex';
+        }
+    });
+
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') document.getElementById('pwa-install-banner').style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    if('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
     function finishSetup() {
         const name = document.getElementById('setupName').value;
@@ -190,85 +192,44 @@
         const a = parseFloat(document.getElementById('setupA').value);
         const gender = document.getElementById('setupGender').value;
         const goal = document.getElementById('setupGoal').value;
-
         if(!name || !w || !h || !a) return alert("أكمل جميع البيانات بدقة");
-
-        // معادلة ميفلين سانت جيور (الأدق علمياً)
         let bmr = (10 * w) + (6.25 * h) - (5 * a);
         bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
-
-        // معامل النشاط (رياضي متوسط = 1.55)
         let tdee = bmr * 1.55;
-
-        // ضبط الهدف
-        if(goal === 'cut') tdee -= 500;
-        else if(goal === 'bulk') tdee += 300;
-
-        // حساب الماكروز الرياضي
-        let proteinG = w * 2.2; // 2.2 جرام لكل كيلو
-        let fatG = w * 0.8;    // 0.8 جرام لكل كيلو
+        if(goal === 'cut') tdee -= 500; else if(goal === 'bulk') tdee += 300;
+        let proteinG = w * 2.2; let fatG = w * 0.8;
         let remainingCals = tdee - (proteinG * 4) - (fatG * 9);
         let carbG = remainingCals / 4;
-
-        db = {
-            setup: true, name,
-            goals: { c: Math.round(tdee), p: Math.round(proteinG), cb: Math.round(carbG), f: Math.round(fatG) },
-            current: {c:0, p:0, cb:0, f:0}, water: 0, creatine: 0,
-            vits: {omega3: false, multi: false, d3: false},
-            logs: [], date: new Date().toLocaleDateString()
-        };
+        db = { setup: true, name, goals: { c: Math.round(tdee), p: Math.round(proteinG), cb: Math.round(carbG), f: Math.round(fatG) }, current: {c:0, p:0, cb:0, f:0}, water: 0, creatine: 0, vits: {omega3: false, multi: false, d3: false}, logs: [], date: new Date().toLocaleDateString() };
         save(); location.reload();
-    }
-
-    function addTrack(type, val) {
-        db[type] = (db[type] || 0) + val;
-        save(); render();
-    }
-
-    function toggleVit(key) {
-        db.vits[key] = !db.vits[key];
-        save(); render();
     }
 
     function render() {
         if(!db.setup) { document.getElementById('setupLayer').classList.remove('hidden'); return; }
-        
         const today = new Date().toLocaleDateString();
-        if(db.date !== today) {
-            db.current = {c:0, p:0, cb:0, f:0}; db.water = 0; db.creatine = 0; 
-            db.vits = {omega3: false, multi: false, d3: false};
-            db.logs = []; db.date = today; save();
-        }
-
-        // ابحث عن هذا السطر في دالة render وغيره ليكون هكذا:
-document.getElementById('greetUser').innerHTML = `مرحباً، <span class="user-name-style">${db.name}</span>`;
-
+        if(db.date !== today) { db.current = {c:0, p:0, cb:0, f:0}; db.water = 0; db.creatine = 0; db.vits = {omega3: false, multi: false, d3: false}; db.logs = []; db.date = today; save(); }
+        document.getElementById('greetUser').innerHTML = `مرحباً، <span class="user-name-style">${db.name}</span>`;
         const rem = Math.max(0, db.goals.c - db.current.c);
         document.getElementById('calRem').innerText = rem;
         document.getElementById('calTotal').innerText = `هدفك: ${db.goals.c} سعر`;
         document.getElementById('progCircle').style.strokeDashoffset = 628 - (Math.min(db.current.c / db.goals.c, 1) * 628);
-        
         document.getElementById('pVal').innerText = `${Math.round(db.current.p)}/${db.goals.p}g`;
         document.getElementById('cbVal').innerText = `${Math.round(db.current.cb)}/${db.goals.cb}g`;
         document.getElementById('fVal').innerText = `${Math.round(db.current.f)}/${db.goals.f}g`;
-
         document.getElementById('wTxt').innerText = `${db.water.toFixed(2)} / 3 L`;
         document.getElementById('wBar').style.width = Math.min((db.water/3)*100, 100) + "%";
-        
         document.getElementById('crTxt').innerText = `${db.creatine} / 5 g`;
         document.getElementById('crBar').style.width = Math.min((db.creatine/5)*100, 100) + "%";
-
         const vitLabels = {omega3: "أوميجا 3", multi: "مالتي فيتامين", d3: "فيتامين D3"};
         document.getElementById('vitList').innerHTML = Object.keys(db.vits).map(key => `
             <div class="vit-item" onclick="toggleVit('${key}')">
                 <span>${vitLabels[key]}</span>
-                <div class="vit-check ${db.vits[key]?'active':''}">
-                    ${db.vits[key]?'✓':''}
-                </div>
-            </div>
-        `).join('');
+                <div class="vit-check ${db.vits[key]?'active':''}"> ${db.vits[key]?'✓':''} </div>
+            </div>`).join('');
     }
 
+    function addTrack(type, val) { db[type] = (db[type] || 0) + val; save(); render(); }
+    function toggleVit(key) { db.vits[key] = !db.vits[key]; save(); render(); }
     function confirmAdd() {
         const c = parseFloat(document.getElementById('inC').value) || 0;
         const p = parseFloat(document.getElementById('inP').value) || 0;
@@ -277,7 +238,6 @@ document.getElementById('greetUser').innerHTML = `مرحباً، <span class="us
         db.current.c += c; db.current.p += p; db.current.cb += cb; db.current.f += f;
         save(); render(); closeAdd();
     }
-
     function showPage(p) {
         document.getElementById('home-page').classList.toggle('hidden', p !== 'home');
         document.getElementById('services-page').classList.toggle('hidden', p !== 'services');
@@ -287,7 +247,7 @@ document.getElementById('greetUser').innerHTML = `مرحباً، <span class="us
     function openAdd() { document.getElementById('addModal').style.display = 'flex'; }
     function closeAdd() { document.getElementById('addModal').style.display = 'none'; }
     function save() { localStorage.setItem('calzy_vScientist', JSON.stringify(db)); }
-    function resetSystem() { if(confirm("إعادة ضبط؟")) { localStorage.clear(); location.reload(); } }
+    function resetSystem() { if(confirm("إعادة ضبط النظام بالكامل؟")) { localStorage.clear(); location.reload(); } }
 
     window.onload = () => {
         const saved = localStorage.getItem('calzy_vScientist');
@@ -297,4 +257,3 @@ document.getElementById('greetUser').innerHTML = `مرحباً، <span class="us
 </script>
 </body>
 </html>
-
