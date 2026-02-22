@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز الخدمات الذكية | Calzy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #8b5cf6; --bg: #05070a; --card: #111827; --text: #f9fafb; --s: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; padding-bottom: 50px; }
+
+        /* زر الرجوع */
+        .btn-back { 
+            background: var(--card); border: 1px solid rgba(255,255,255,0.1); 
+            color: white; padding: 10px 20px; border-radius: 15px; cursor: pointer; 
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            font-weight: bold; margin-bottom: 20px;
+        }
+
+        /* حقل البحث المضيء */
+        .search-box {
+            width: 100%; padding: 18px; background: #0f172a; border: 2px solid #1e293b;
+            border-radius: 20px; color: white; outline: none; margin-bottom: 30px;
+            transition: 0.4s;
+        }
+        .search-box:focus {
+            border-color: var(--p);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        /* شبكة الخدمات */
+        .services-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 15px; 
+        }
+        .s-card {
+            background: var(--card); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px; padding: 20px; text-align: center; cursor: pointer;
+            transition: 0.3s;
+        }
+        .s-card:hover { border-color: var(--p); transform: translateY(-5px); background: #1e293b; }
+        .s-icon { font-size: 30px; margin-bottom: 10px; display: block; }
+
+        /* النافذة المنبثقة (Modal) */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: var(--card); width: 100%; max-width: 400px;
+            padding: 25px; border-radius: 25px; border: 1px solid var(--p);
+            position: relative;
+        }
+        .close-modal { position: absolute; top: 15px; left: 15px; cursor: pointer; color: #6b7280; }
+        
+        input, select {
+            width: 100%; padding: 12px; background: #1f2937; border: 1px solid #374151;
+            border-radius: 12px; color: white; margin: 10px 0; outline: none;
+        }
+        .calc-btn {
+            width: 100%; padding: 15px; background: var(--p); border: none;
+            border-radius: 12px; color: white; font-weight: 900; cursor: pointer;
+        }
+        .result-area {
+            margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1);
+            border: 1px dashed var(--s); border-radius: 15px; display: none; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn-back">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 12H5m7 7l-7-7 7-7"></path></svg>
+        الرجوع للرئيسية
+    </a>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن خدمتك..." onkeyup="filterCards()">
+
+    <div class="services-grid" id="grid"></div>
+
+    <div id="calcModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">✕</span>
+            <h3 id="mTitle" style="color:var(--p); margin-bottom:15px;"></h3>
+            <div id="mInputs"></div>
+            <button class="calc-btn" onclick="runCalculation()">احسب الآن ✅</button>
+            <div id="mResult" class="result-area"></div>
+        </div>
+    </div>
+
+    <script>
+        const services = [
+            { id: 'bf', n: "نسبة الدهون", i: "⚖️", d: "حسب قياسات الجسم", inputs: ['height|الطول (سم)', 'waist|الخصر (سم)', 'neck|الرقبة (سم)'] },
+            { id: 'rm', n: "أقصى وزن 1RM", i: "🏋️", d: "قياس قوتك البدنية", inputs: ['weight|الوزن المرفوع', 'reps|العدات'] },
+            { id: 'water', n: "حاسبة الماء", i: "💧", d: "احتياجك اليومي", inputs: ['uWeight|وزنك الحالي'] },
+            { id: 'creatine', n: "جرعة الكرياتين", i: "💊", d: "حسب وزن الجسم", inputs: ['uWeight|وزنك الحالي'] },
+            { id: 'bmi', n: "مؤشر الكتلة BMI", i: "📏", d: "تناسق الوزن والطول", inputs: ['uWeight|الوزن', 'height|الطول (سم)'] },
+            { id: 'protein', n: "حاسبة البروتين", i: "🥩", d: "لبناء العضلات", inputs: ['uWeight|الوزن'] },
+            { id: 'steps', n: "حرق المشي", i: "🚶", d: "حرق السعرات بالخطوات", inputs: ['steps|عدد الخطوات'] },
+            // ... (بقية الـ 50 خدمة تضاف هنا بنفس النمط)
+        ];
+
+        let currentActiveId = '';
+
+        function render() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = services.map(s => `
+                <div class="s-card" onclick="openModal('${s.id}')">
+                    <span class="s-icon">${s.i}</span>
+                    <b>${s.n}</b>
+                    <small>${s.d}</small>
+                </div>
+            `).join('');
+        }
+
+        function openModal(id) {
+            const s = services.find(x => x.id === id);
+            currentActiveId = id;
+            document.getElementById('mTitle').innerText = s.n;
+            document.getElementById('mInputs').innerHTML = s.inputs.map(inp => {
+                const [idName, placeholder] = inp.split('|');
+                return `<input type="number" id="val_${idName}" placeholder="${placeholder}">`;
+            }).join('');
+            document.getElementById('mResult').style.display = 'none';
+            document.getElementById('calcModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('calcModal').style.display = 'none'; }
+
+        function runCalculation() {
+            let res = "";
+            const getVal = (id) => parseFloat(document.getElementById('val_' + id).value) || 0;
+
+            if (currentActiveId === 'bf') {
+                const h = getVal('height'), w = getVal('waist'), n = getVal('neck');
+                res = (495 / (1.0324 - 0.19077 * Math.log10(w - n) + 0.15456 * Math.log10(h)) - 450).toFixed(1) + "% نسبة دهونك";
+            } else if (currentActiveId === 'rm') {
+                res = Math.round(getVal('weight') * (1 + getVal('reps') / 30)) + " كجم هو أقصى وزن";
+            } else if (currentActiveId === 'water') {
+                res = (getVal('uWeight') * 0.035).toFixed(1) + " لتر يومياً";
+            } else if (currentActiveId === 'creatine') {
+                res = (getVal('uWeight') * 0.05).toFixed(1) + " جرام يومياً";
+            } else if (currentActiveId === 'bmi') {
+                const h = getVal('height')/100;
+                res = (getVal('uWeight') / (h*h)).toFixed(1) + " BMI";
+            } else if (currentActiveId === 'protein') {
+                res = (getVal('uWeight') * 2.2).toFixed(0) + " جرام بروتين كهدف مثالي";
+            } else if (currentActiveId === 'steps') {
+                res = (getVal('steps') * 0.04).toFixed(0) + " سعر حراري تقريباً";
+            }
+
+            const rBox = document.getElementById('mResult');
+            rBox.innerHTML = `<b>النتيجة: ${res}</b>`;
+            rBox.style.display = 'block';
+        }
+
+        function filterCards() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.s-card');
+            cards.forEach(c => {
+                const text = c.innerText.toLowerCase();
+                c.style.display = text.includes(q) ? 'block' : 'none';
+            });
+        }
+
+        window.onload = render;
+    </script>
+</body>
+</html>
