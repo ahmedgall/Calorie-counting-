@@ -453,6 +453,42 @@
         if(saved) db = JSON.parse(saved);
         render();
     };
+
+// كود التحديث التلقائي الذكي
+function autoRefreshSystem() {
+    const NOW = Date.now();
+    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 ساعة بالملي ثانية
+    const lastRefresh = localStorage.getItem('last_auto_refresh');
+
+    // 1. التحديث بناءً على الوقت (كل 24 ساعة)
+    if (!lastRefresh || (NOW - lastRefresh) > ONE_DAY) {
+        localStorage.setItem('last_auto_refresh', NOW);
+        console.log("يتم الآن تحديث الموقع لجلب آخر الميزات...");
+        window.location.reload(true); // تحديث إجباري من السيرفر
+    }
+
+    // 2. التحديث الفوري عند اكتشاف نسخة جديدة (Service Worker Update)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // هناك نسخة جديدة جاهزة
+                        console.log("نسخة جديدة متوفرة، جاري التحديث...");
+                        window.location.reload(); 
+                    }
+                };
+            };
+        });
+    }
+}
+
+// تشغيل الفحص بمجرد فتح الصفحة
+autoRefreshSystem();
+
+
+
 </script>
 </body>
 </html>
