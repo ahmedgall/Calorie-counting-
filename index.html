@@ -171,7 +171,7 @@
 
 </div>
 
-<a href="https://t.me/+af_9KARCZDJiM2Y0" target="_blank" class="tg-capsule">
+<a href="https://t.me/YOUR_CHANNAL_LINK" target="_blank" class="tg-capsule">
     <div class="tg-inner">
         <svg class="tg-svg" viewBox="0 0 24 24">
             <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .33z"/>
@@ -179,6 +179,95 @@
         <span class="tg-label">مجتمعنا</span>
     </div>
 </a>
+
+<a href="score.html" style="text-decoration: none;">
+    <div class="rank-link-card">
+        <div class="rank-link-content">
+            <div class="rank-link-icon" id="miniBadge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            </div>
+            <div class="rank-link-text">
+                <span class="rank-mini-label">المستوى الحالي</span>
+                <h4 class="rank-display-name" id="userRankDisplay">جاري التحميل...</h4>
+            </div>
+        </div>
+        <div class="rank-link-arrow">
+            <span>تفاصيل الرتبة</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </div>
+    </div>
+</a>
+
+<style>
+.rank-link-card {
+    background: linear-gradient(90deg, #111827 0%, #1e1b4b 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.rank-link-card:active { transform: scale(0.97); }
+
+.rank-link-content { display: flex; align-items: center; gap: 15px; }
+
+.rank-link-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.rank-mini-label { font-size: 10px; color: #94a3b8; font-weight: bold; display: block; }
+.rank-display-name { color: white; font-size: 16px; font-weight: 900; margin-top: 2px; }
+
+.rank-link-arrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8b5cf6;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* حركة نبض خفيفة للأيقونة */
+@keyframes miniPulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+.rank-link-icon { animation: miniPulse 2s infinite; }
+</style>
+
+<script>
+// كود صغير لتحديث اسم الرتبة فوراً في الزر
+function updateHomeRank() {
+    const challengeData = JSON.parse(localStorage.getItem('calzy_challenges')) || { doneDays: [] };
+    const totalDone = challengeData.doneDays.length;
+    const currentLevel = Math.floor(totalDone / 30);
+    const rankNames = ["مبتدئ طموح", "وحش كاسر", "أسطورة الصالة"];
+    
+    document.getElementById('userRankDisplay').innerText = rankNames[Math.min(currentLevel, 2)];
+}
+// تشغيل التحديث عند فتح الصفحة الرئيسية
+updateHomeRank();
+</script>
+
+
 
 <style>
 .tg-capsule {
@@ -454,6 +543,7 @@
         render();
     };
 
+
 // كود التحديث التلقائي الذكي
 function autoRefreshSystem() {
     const NOW = Date.now();
@@ -488,8 +578,6 @@ function autoRefreshSystem() {
 autoRefreshSystem();
 
 
-
 </script>
 </body>
 </html>
-
