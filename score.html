@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الرتب | Calzy OS Pro</title>
+    <title>رتبة البطل | Calzy OS Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #8b5cf6; --bg: #030712; --card: #111827; --gold: #fbbf24; }
+        :root { 
+            --p: #8b5cf6; 
+            --bg: #030712; 
+            --card: #111827; 
+            --gold: #fbbf24; 
+            --silver: #94a3b8;
+            --bronze: #854d0e;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: white; padding: 20px; padding-bottom: 100px; }
 
@@ -18,20 +25,21 @@
             text-align: center;
             border: 1px solid rgba(139, 92, 246, 0.1);
             margin-bottom: 25px;
+            position: relative;
         }
 
         .svg-container {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin: 0 auto 15px;
             filter: drop-shadow(0 0 15px var(--p));
         }
 
         .user-welcome { font-size: 14px; color: var(--p); font-weight: bold; margin-bottom: 5px; }
-        .current-rank-title { font-size: 28px; font-weight: 900; margin-bottom: 20px; }
+        .current-rank-title { font-size: 28px; font-weight: 900; margin-bottom: 15px; }
 
-        /* شريط XP بتصميم مودرن */
-        .xp-wrapper { background: #1f2937; height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; border: 1px solid #374151; }
+        /* شريط XP */
+        .xp-wrapper { background: #1f2937; height: 10px; border-radius: 10px; margin: 10px 0; overflow: hidden; border: 1px solid #374151; }
         .xp-fill { 
             height: 100%; background: linear-gradient(90deg, #8b5cf6, #d8b4fe); 
             width: 0%; transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
@@ -43,95 +51,142 @@
         .stat-box small { font-size: 11px; color: #94a3b8; display: block; }
         .stat-box span { font-size: 18px; font-weight: 900; color: var(--p); }
 
-        /* قائمة الرتب بالـ SVG */
+        /* خزانة الأوسمة */
+        .trophy-container {
+            background: var(--card);
+            border-radius: 25px;
+            padding: 20px;
+            border: 1px solid #1f2937;
+            margin-bottom: 25px;
+        }
+        .trophy-container h3 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .trophy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .trophy-item { 
+            text-align: center; 
+            filter: grayscale(1); opacity: 0.2; 
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .trophy-item.unlocked { filter: grayscale(0); opacity: 1; transform: scale(1.05); }
+        .trophy-icon { 
+            width: 55px; height: 55px; background: rgba(255,255,255,0.03); 
+            border-radius: 18px; display: flex; align-items: center; justify-content: center; 
+            font-size: 26px; margin: 0 auto 5px; border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .trophy-item.unlocked .trophy-icon { border-color: var(--p); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
+        .trophy-item p { font-size: 10px; color: #94a3b8; font-weight: bold; }
+
+        /* قائمة الرتب */
         .ranks-list { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid #1f2937; }
         .rank-item { 
-            display: flex; align-items: center; gap: 15px; padding: 15px; 
-            border-bottom: 1px solid #1f2937; opacity: 0.3; transition: 0.3s;
+            display: flex; align-items: center; gap: 15px; padding: 12px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); opacity: 0.3; transition: 0.3s;
         }
-        .rank-item.active { opacity: 1; transform: scale(1.02); }
-        .rank-item svg { width: 40px; height: 40px; }
-        .rank-info h4 { font-size: 16px; font-weight: 900; }
-        .rank-info p { font-size: 11px; color: #94a3b8; }
+        .rank-item:last-child { border: none; }
+        .rank-item.active { opacity: 1; transform: scale(1.02); color: var(--p); }
+        .rank-item svg { width: 35px; height: 35px; }
 
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 20px; border-top: 1px solid #1f2937; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1f2937; }
+        .nav-item { color: #4b5563; text-decoration: none; font-size: 24px; }
     </style>
 </head>
 <body>
 
     <div class="rank-hero">
-        <p class="user-welcome">يا  <span id="userName"></span></p>
-        <div class="svg-container" id="mainIcon">
-            </div>
+        <p class="user-welcome">الكوتش <span id="userNameDisplay">بطل</span> 🔥</p>
+        <div class="svg-container" id="mainIcon"></div>
         <h2 class="current-rank-title" id="rankTitle">جارِ الحساب...</h2>
         
         <div class="xp-wrapper">
             <div class="xp-fill" id="xpFill"></div>
         </div>
-        <p style="font-size: 12px;" id="xpStatus">باقي 0 يوم على الترقية</p>
+        <p style="font-size: 11px; color: #94a3b8;" id="xpStatusText">باقي 0 يوم على الترقية</p>
     </div>
 
     <div class="stats-grid">
         <div class="stat-box">
             <small>إجمالي الأيام</small>
-            <span id="totalDays">0</span>
+            <span id="statDays">0</span>
         </div>
         <div class="stat-box">
-            <small>نسبة الالتزام</small>
-            <span id="commitRate">0%</span>
+            <small>الستريك الحالي</small>
+            <span id="statStreak">0</span>
+        </div>
+    </div>
+
+    <div class="trophy-container">
+        <h3>🏆 خزانة الأوسمة</h3>
+        <div class="trophy-grid">
+            <div class="trophy-item" id="t-first"><div class="trophy-icon">🌱</div><p>أول خطوة</p></div>
+            <div class="trophy-item" id="t-week"><div class="trophy-icon">🔥</div><p>أسبوع نار</p></div>
+            <div class="trophy-item" id="t-water"><div class="trophy-icon">💧</div><p>مرطب بطل</p></div>
+            <div class="trophy-item" id="t-month"><div class="trophy-icon">👑</div><p>سيد الالتزام</p></div>
+            <div class="trophy-item" id="t-power"><div class="trophy-icon">⚡</div><p>طاقة قصوى</p></div>
+            <div class="trophy-item" id="t-creatine"><div class="trophy-icon">🧪</div><p>مدعوم علمياً</p></div>
         </div>
     </div>
 
     <div class="ranks-list">
+        <h4 style="margin-bottom: 15px; font-size: 14px; color: #6b7280;">خريطة الطريق</h4>
         <div class="rank-item" id="item0">
             <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
-            <div class="rank-info"><h4>مستوى: البداية</h4><p>من 1 إلى 30 يوم التزام</p></div>
+            <div><h4>مستوى: البداية</h4><p style="font-size: 10px;">1 - 30 يوم</p></div>
         </div>
         <div class="rank-item" id="item1">
             <svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            <div class="rank-info"><h4>مستوى: الوحش</h4><p>من 31 إلى 60 يوم التزام</p></div>
+            <div><h4>مستوى: الوحش</h4><p style="font-size: 10px;">31 - 60 يوم</p></div>
         </div>
         <div class="rank-item" id="item2">
             <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <div class="rank-info"><h4>مستوى: الأسطورة</h4><p>أكثر من 60 يوم التزام</p></div>
+            <div><h4>مستوى: الأسطورة</h4><p style="font-size: 10px;">+60 يوم</p></div>
         </div>
     </div>
 
-
+    
     <script>
         const svgs = [
-            `<svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`,
-            `<svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-            `<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`
+            `<svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`,
+            `<svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+            `<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`
         ];
 
-        function loadRankData() {
-            // سحب البيانات من LocalStorage
-            const userName = localStorage.getItem('user_name') || 'بطل كالزي';
+        function initRankSystem() {
+            // سحب البيانات من الملفات المختلفة
+            const mainData = JSON.parse(localStorage.getItem('calzy_vScientist')) || {};
             const challengeData = JSON.parse(localStorage.getItem('calzy_challenges')) || { doneDays: [] };
-            
-            const totalDone = challengeData.doneDays.length;
-            const currentLevel = Math.floor(totalDone / 30);
-            const daysInCurrentLevel = totalDone % 30;
+            const streakData = JSON.parse(localStorage.getItem('user_streak')) || { count: 0 };
+
+            const name = mainData.name || localStorage.getItem('user_name') || 'بطل كالزي';
+            const totalDays = challengeData.doneDays.length;
+            const currentLevel = Math.min(Math.floor(totalDays / 30), 2);
+            const daysInCurrentLevel = totalDays % 30;
             const progress = (daysInCurrentLevel / 30) * 100;
-
             const rankNames = ["مبتدئ طموح", "وحش كاسر", "أسطورة الصالة"];
-            
-            // تحديث العناصر
-            document.getElementById('userName').innerText = userName;
-            document.getElementById('totalDays').innerText = totalDone;
-            document.getElementById('rankTitle').innerText = rankNames[Math.min(currentLevel, 2)];
-            document.getElementById('mainIcon').innerHTML = svgs[Math.min(currentLevel, 2)];
-            document.getElementById('xpFill').style.width = progress + '%';
-            document.getElementById('xpStatus').innerText = `باقي ${30 - daysInCurrentLevel} يوم للرتبة التالية`;
-            document.getElementById('commitRate').innerText = Math.round((totalDone / 30) * 100) + '%';
 
-            // تفعيل القائمة
-            const levelIndex = Math.min(currentLevel, 2);
-            document.getElementById('item' + levelIndex).classList.add('active');
+            // 1. تحديث الهوية والرتبة
+            document.getElementById('userNameDisplay').innerText = name;
+            document.getElementById('statDays').innerText = totalDays;
+            document.getElementById('statStreak').innerText = streakData.count;
+            document.getElementById('rankTitle').innerText = rankNames[currentLevel];
+            document.getElementById('mainIcon').innerHTML = svgs[currentLevel];
+            
+            // 2. تحديث شريط الخبرة XP
+            document.getElementById('xpFill').style.width = progress + '%';
+            document.getElementById('xpStatusText').innerText = `باقي ${30 - daysInCurrentLevel} يوم للترقية التالية`;
+
+            // 3. تفعيل الرتبة في القائمة
+            document.getElementById('item' + currentLevel).classList.add('active');
+
+            // 4. فحص وفتح الأوسمة
+            if (totalDays >= 1) document.getElementById('t-first').classList.add('unlocked');
+            if (streakData.count >= 7) document.getElementById('t-week').classList.add('unlocked');
+            if (totalDays >= 30) document.getElementById('t-month').classList.add('unlocked');
+            if (mainData.water >= 3) document.getElementById('t-water').classList.add('unlocked');
+            if (mainData.creatine >= 5) document.getElementById('t-creatine').classList.add('unlocked');
+            if (mainData.current && (mainData.current.c / mainData.goals.c) >= 0.9) document.getElementById('t-power').classList.add('unlocked');
         }
 
-        window.onload = loadRankData;
+        window.onload = initRankSystem;
     </script>
 </body>
 </html>
+
