@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الـ 30 يوم | Calzy OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #8b5cf6; --bg: #05070a; --card: #111827; --text: #f9fafb; --locked: #1f2937; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; text-align: center; }
+        
+        h1 { font-weight: 900; color: var(--p); margin-bottom: 10px; }
+        .timer-info { background: rgba(139, 92, 246, 0.1); padding: 10px; border-radius: 12px; margin-bottom: 25px; font-size: 14px; color: #a78bfa; }
+
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 400px; margin: 0 auto; }
+        
+        .box {
+            aspect-ratio: 1/1; background: var(--locked); border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 18px; cursor: pointer;
+            transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); position: relative;
+        }
+
+        .box.openable { background: var(--p); box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); border-color: #a78bfa; }
+        .box.done { background: #10b981; color: white; cursor: default; }
+        .box.done::after { content: "✅"; position: absolute; font-size: 10px; bottom: 5px; }
+        .box.locked { opacity: 0.5; cursor: not-allowed; }
+        .box.locked::before { content: "🔒"; position: absolute; font-size: 10px; top: 5px; right: 5px; }
+
+        /* Modal للتحدي */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 25px; border: 2px solid var(--p); width: 100%; max-width: 350px; }
+        .modal-content h3 { margin-bottom: 15px; color: var(--p); }
+        .btn-done { background: #10b981; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h1>تحدي الـ 30 يوم 🏆</h1>
+    <div class="timer-info" id="statusMsg">جاهز لتحدي جديد؟</div>
+
+    <div class="grid" id="challengeGrid"></div>
+
+    <div id="challengeModal" class="modal">
+        <div class="modal-content">
+            <h2 id="dayTitle">اليوم 1</h2>
+            <p id="challengeText" style="margin: 15px 0; line-height: 1.6;"></p>
+            <button class="btn-done" onclick="markAsDone()">تم الإنجاز 💪</button>
+        </div>
+    </div>
+
+    <script>
+        const challenges = [
+            "قم بعمل 20 تمرينة ضغط (Push-ups) فوراً!",
+            "امنع السكر تماماً في جميع مشروباتك اليوم.",
+            "امشِ لمدة 30 دقيقة متواصلة.",
+            "اشرب 3 لتر ماء على مدار اليوم.",
+            "قم بعمل تمرينة Plank لمدة دقيقة واحدة.",
+            "لا تأكل أي وجبات سريعة (Fast Food) اليوم.",
+            "قم بعمل 40 تمرينة القرفصاء (Squats).",
+            "نَم لمدة 8 ساعات كاملة الليلة.",
+            "تناول وجبة غنية بالبروتين (بيض، دجاج، أو تونة).",
+            "قم بعمل 15 دقيقة تمارين إطالة (Stretching)."
+            // يمكنك إكمال الـ 30 تحدي هنا...
+        ];
+
+        let state = JSON.parse(localStorage.getItem('calzy_challenges')) || {
+            doneDays: [],
+            lastOpenTime: 0
+        };
+
+        function renderGrid() {
+            const grid = document.getElementById('challengeGrid');
+            grid.innerHTML = '';
+            
+            const now = Date.now();
+            const oneDayInMs = 24 * 60 * 60 * 1000;
+            const canOpen = (now - state.lastOpenTime) >= oneDayInMs;
+
+            for (let i = 1; i <= 30; i++) {
+                const box = document.createElement('div');
+                box.className = 'box';
+                box.innerText = i;
+
+                if (state.doneDays.includes(i)) {
+                    box.classList.add('done');
+                } else if (i === state.doneDays.length + 1 && canOpen) {
+                    box.classList.add('openable');
+                    box.onclick = () => openChallenge(i);
+                } else {
+                    box.classList.add('locked');
+                }
+                grid.appendChild(box);
+            }
+
+            updateStatus(canOpen);
+        }
+
+        function updateStatus(canOpen) {
+            const msg = document.getElementById('statusMsg');
+            if (canOpen) {
+                msg.innerText = "صندوق اليوم متاح! افتحه الآن.";
+                msg.style.color = "#10b981";
+            } else {
+                const nextOpen = state.lastOpenTime + (24 * 60 * 60 * 1000);
+                const hoursLeft = Math.ceil((nextOpen - Date.now()) / (1000 * 60 * 60));
+                msg.innerText = `التحدي القادم يفتح بعد ${hoursLeft} ساعة تقريباً.`;
+                msg.style.color = "#a78bfa";
+            }
+        }
+
+        let currentActiveDay = 0;
+        function openChallenge(day) {
+            currentActiveDay = day;
+            document.getElementById('dayTitle').innerText = `تحدي اليوم ${day}`;
+            document.getElementById('challengeText').innerText = challenges[(day-1) % challenges.length];
+            document.getElementById('challengeModal').style.display = 'flex';
+        }
+
+        function markAsDone() {
+            state.doneDays.push(currentActiveDay);
+            state.lastOpenTime = Date.now();
+            localStorage.setItem('calzy_challenges', JSON.stringify(state));
+            
+            document.getElementById('challengeModal').style.display = 'none';
+            renderGrid();
+            alert("كفو! تم تسجيل إنجاز اليوم 🫡");
+        }
+
+        window.onload = renderGrid;
+    </script>
+</body>
+</html>
