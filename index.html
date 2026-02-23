@@ -59,6 +59,47 @@
         .pwa-content { display: flex; align-items: center; gap: 10px; }
         .pwa-content img { width: 40px; height: 40px; border-radius: 8px; }
         #pwa-install-btn { background: #000; color: #fff; border: 1px solid var(--p); padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
+   
+   .mini-streak-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(251, 191, 36, 0.05); /* خلفية ذهبية شفافة جداً */
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 4px 12px;
+    border-radius: 50px;
+    color: #fbbf24;
+    font-weight: 900;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.1);
+    transition: 0.3s;
+}
+
+.streak-icon-svg {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.6));
+}
+
+#streakDays {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+/* حركة نبض خفيفة جداً للكبسولة */
+.mini-streak-capsule {
+    animation: gentleGlow 4s infinite;
+}
+
+@keyframes gentleGlow {
+    0%, 100% { border-color: rgba(251, 191, 36, 0.3); box-shadow: 0 0 10px rgba(251, 191, 36, 0.1); }
+    50% { border-color: rgba(251, 191, 36, 0.6); box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
+}
+ 
+   
     </style>
     
     <link rel="manifest" href="manifest.json">
@@ -88,7 +129,20 @@
 <div class="container" id="mainApp">
     <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
         <h2 id="greetUser">مرحباً</h2>
+        
+        <div class="mini-streak-capsule">
+    <div class="streak-icon-svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.6571 18.6571C16.1956 20.1186 14.1956 21 12 21C7.58172 21 4 17.4183 4 13C4 10.1262 5.51448 7.5959 7.79469 6.17382C8.28315 5.86915 8.94611 5.9189 9.3876 6.36039L12 9L15.6124 5.3876C16.0539 4.94611 16.7169 4.89635 17.2053 5.20102C19.4855 6.6231 21 9.15342 21 12C21 14.1956 20.1186 16.1956 18.6571 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 13C15 14.6569 13.6569 16 12 16C10.3431 16 9 14.6569 9 13C9 11.3431 10.3431 10 12 10C13.6569 10 15 11.3431 15 13Z" fill="currentColor"/>
+        </svg>
+    </div>
+    <span id="streakDays">0</span>
+</div>
 
+
+        
+</header>
 
     <div id="home-page">
         <div class="main-display">
@@ -198,6 +252,31 @@
         </div>
     </div>
 </a>
+<div class="glass-card reset-btn-container" 
+     onclick="if(confirm('⚠️ هل أنت متأكد؟\nسيتم مسح الاسم، الوزن، وكل السجلات نهائياً والبدء من جديد.')){ localStorage.clear(); location.reload(); }" 
+     style="cursor: pointer; border: 1px solid rgba(239, 68, 68, 0.3); padding: 18px; border-radius: 22px; background: rgba(239, 68, 68, 0.08); margin: 15px 0; transition: transform 0.2s active;">
+    
+    <div style="display:flex; align-items:center; gap:15px; direction: rtl;">
+        <div style="width:45px; height:45px; background: rgba(239, 68, 68, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ef4444;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </div>
+        
+        <div style="text-align: right;">
+            <b style="color:#ef4444; font-size: 16px; display: block;">إعادة ضبط المصنع</b>
+            <small style="color:#94a3b8; font-size: 11px;">سيقوم هذا بحذف بروفايلك تماماً</small>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* تأثير بسيط عند الضغط باللمس */
+    .reset-btn-container:active {
+        transform: scale(0.96);
+        background: rgba(239, 68, 68, 0.15) !important;
+    }
+</style>
 
 <style>
 .rank-link-card {
@@ -575,6 +654,27 @@ function autoRefreshSystem() {
 autoRefreshSystem();
 
 
+function updateStreak() {
+    const today = new Date().toLocaleDateString();
+    let streakData = JSON.parse(localStorage.getItem('calzy_streak')) || { count: 0, lastDate: "" };
+
+    if (streakData.lastDate !== today) {
+        const lastDate = new Date(streakData.lastDate);
+        const currentDate = new Date(today);
+        const diff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (diff === 1) streakData.count++; 
+        else if (diff > 1 || streakData.lastDate === "") streakData.count = 1;
+
+        streakData.lastDate = today;
+        localStorage.setItem('calzy_streak', JSON.stringify(streakData));
+    }
+    document.getElementById('streakDays').innerText = streakData.count;
+}
+// استدعها في onload
+updateStreak();
+
+
 </script>
 </body>
-</html>
+            </html>
