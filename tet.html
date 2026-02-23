@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موسوعة كالزي الكبرى | 150 مكمل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #a855f7; --bg: #030712; --card: #111827; --gold: #fbbf24; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: white; padding: 15px; line-height: 1.6; }
+
+        .header { text-align: center; margin: 20px 0; }
+        .header h1 { font-size: 24px; font-weight: 900; background: linear-gradient(to right, #fff, var(--p)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stats { font-size: 11px; color: #6b7280; margin-top: 5px; }
+
+        .search-container { position: sticky; top: 10px; z-index: 1000; margin-bottom: 20px; }
+        .search-bar { background: var(--card); border: 1px solid var(--p); border-radius: 15px; padding: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 14px; text-align: right; }
+
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 10px; scrollbar-width: none; }
+        .filter-btn { background: #1f2937; border: none; color: #94a3b8; padding: 6px 15px; border-radius: 20px; font-size: 11px; white-space: nowrap; cursor: pointer; transition: 0.3s; }
+        .filter-btn.active { background: var(--p); color: white; }
+
+        .supp-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .supp-card { background: var(--card); border-radius: 18px; padding: 18px; border: 1px solid #1f2937; position: relative; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .category-pill { font-size: 9px; background: rgba(168, 85, 247, 0.2); color: var(--p); padding: 2px 8px; border-radius: 5px; font-weight: bold; }
+        .supp-card h3 { font-size: 17px; color: #fff; margin: 8px 0 5px 0; }
+        .desc { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+        .dose-box { background: rgba(251, 191, 36, 0.07); border-right: 3px solid var(--gold); padding: 8px; font-size: 11px; color: var(--gold); border-radius: 4px; font-weight: bold; }
+        
+        .no-data { text-align: center; padding: 50px; color: #4b5563; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>موسوعة المكملات الكبرى 🧬</h1>
+        <div class="stats" id="counter">جارِ تحميل البيانات...</div>
+    </div>
+
+    <div class="search-container">
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="ابحث عن اسم المكمل..." oninput="search()">
+        </div>
+    </div>
+
+    <div class="filters" id="filterBar">
+        <button class="filter-btn active" onclick="filterCat('الكل', this)">الكل</button>
+        <button class="filter-btn" onclick="filterCat('عضلات', this)">عضلات وقوة</button>
+        <button class="filter-btn" onclick="filterCat('طاقة', this)">طاقة وأداء</button>
+        <button class="filter-btn" onclick="filterCat('حوارق', this)">تنشيف وحرق</button>
+        <button class="filter-btn" onclick="filterCat('فيتامينات', this)">فيتامينات وصحة</button>
+        <button class="filter-btn" onclick="filterCat('مفاصل', this)">مفاصل واستشفاء</button>
+    </div>
+
+    <div class="supp-grid" id="container"></div>
+    <div class="no-data" id="empty">لا توجد نتائج مطابقة لبحثك</div>
+
+    <script>
+        // مصفوفة البيانات الضخمة (تم دمج كل الداتا السابقة هنا)
+        const data = [
+            { n: "كرياتين مونوهايدريت", c: "عضلات", d: "المكمل رقم 1 لزيادة القوة البدنية وانتاج الطاقة.", g: "5 جرام يومياً" },
+            { n: "واي بروتين", c: "عضلات", d: "بروتين سريع الامتصاص للبناء والاستشفاء العضلي.", g: "1-2 سكوب" },
+            { n: "كازين", c: "عضلات", d: "بروتين بطيء لمد العضلات بالأمينو أثناء النوم.", g: "30 جرام قبل النوم" },
+            { n: "سيترولين ماليت", c: "طاقة", d: "يزيد التحمل ويقلل آلام العضلات (Pump).", g: "6-8 جرام" },
+            { n: "بيتا آلانين", c: "عضلات", d: "يؤخر التعب ويسمح لك بأداء عدات أكثر.", g: "3.2 جرام" },
+            { n: "أوميجا 3", c: "فيتامينات", d: "صحة القلب، المفاصل، وتقليل الالتهابات.", g: "1-2 جرام" },
+            { n: "كافيين آنهيدروس", c: "طاقة", d: "منبه قوي يزيد اليقظة والتركيز وحرق الدهون.", g: "200 ملجم" },
+            { n: "إل-كارنيتين", c: "حوارق", d: "ينقل الأحماض الدهنية للخلايا ليتم حرقها كطاقة.", g: "2-3 جرام" },
+            { n: "أشوغاندا (KSM-66)", c: "مفاصل", d: "تخفض التوتر (الكورتيزول) وتزيد التستوستيرون.", g: "600 ملجم" },
+            { n: "بي سي آي آي (BCAA)", c: "عضلات", d: "أحماض متشعبة لتقليل الإجهاد العضلي أثناء التمرين.", g: "10 جرام" },
+            { n: "جذور الماكا", c: "عضلات", d: "عشبة تزيد الطاقة والرغبة والنشاط العام.", g: "3 جرام" },
+            { n: "يوهمبين", c: "حوارق", d: "يستهدف الدهون العنيدة في البطن والأرداف.", g: "5-10 ملجم" },
+            { n: "فيتامين D3", c: "فيتامينات", d: "للمناعة، العظام، وهرمونات الذكورة.", g: "5000 وحدة" },
+            { n: "زنك", c: "فيتامينات", d: "أساسي لإنتاج التستوستيرون وتقوية المناعة.", g: "30 ملجم" },
+            { n: "ماغنيسيوم", c: "فيتامينات", d: "للنوم، الاسترخاء، ومنع تشنج العضلات.", g: "400 ملجم" },
+            { n: "ميلك ثيسل", c: "فيتامينات", d: "أشهر مكمل طبيعي لدعم وظائف الكبد وتنقيته.", g: "250 ملجم" },
+            { n: "كولاجين هيدرولايزد", c: "مفاصل", d: "ترميم الأربطة والأوتار وتحسين صحة الجلد.", g: "10-20 جرام" },
+            { n: "جلوكوزامين", c: "مفاصل", d: "لحماية الغضاريف وتقليل آلام المفاصل.", g: "1500 ملجم" },
+            { n: "ثيانين", c: "طاقة", d: "يعطي تركيزاً هادئاً ويقلل توتر الكافيين.", g: "200 ملجم" },
+            { n: "تونا كات علي", c: "عضلات", d: "عشبة ماليزية لرفع التستوستيرون الحر.", g: "200-400 ملجم" },
+            { n: "أرجنين AKG", c: "طاقة", d: "يحسن ضخ الدم وتوصيل المغذيات للعضلات.", g: "3 جرام" },
+            { n: "ميلاتونين", c: "فيتامينات", d: "هرمون طبيعي لتنظيم وعمق النوم.", g: "3-5 ملجم" },
+            { n: "إنزيمات هاضمة", c: "فيتامينات", d: "تحسن امتصاص الطعام وتمنع النفخة والغازات.", g: "مع الوجبات" },
+            { n: "سيليوم هاسك", c: "حوارق", d: "ألياف طبيعية تعطي شعوراً بالشبع وتنظف القولون.", g: "10 جرام" },
+            { n: "بيربيرين", c: "حوارق", d: "ينظم سكر الدم ويحسن حساسية الأنسولين.", g: "500 ملجم" },
+            { n: "فيتامين B12", c: "فيتامينات", d: "أساسي لصحة الأعصاب وإنتاج الطاقة.", g: "1000 ميكرو" },
+            { n: "إي آي آي (EAA)", c: "عضلات", d: "الأحماض التسعة الأساسية للبناء العضلي الشامل.", g: "10-15 جرام" },
+            { n: "ألفا جي بي سي", c: "طاقة", d: "أفضل ناقل للكولين لتحسين التركيز الذهني.", g: "300 ملجم" },
+            { n: "ريزفيراترول", c: "فيتامينات", d: "مضاد أكسدة قوي لصحة القلب وطول العمر.", g: "250 ملجم" },
+            { n: "إتش إم بي (HMB)", c: "عضلات", d: "يمنع تكسير العضلات أثناء الصيام أو الدايت القاسي.", g: "3 جرام" }, 
+
+// --- تابع مكملات الطاقة والأعصاب ---
+{ n: "باكوبا مونيري", c: "طاقة", d: "عشبة هندية تحسن الذاكرة والتعلم وتقلل التوتر الذهني.", g: "300 ملجم" },
+{ n: "ألفا ليبويك أسيد (ALA)", c: "حوارق", d: "مضاد أكسدة شامل يساعد في تحويل الجلوكوز لطاقة.", g: "600 ملجم" },
+{ n: "أسيتيل إل-كارنيتين (ALCAR)", c: "طاقة", d: "نسخة من الكارنيتين تخترق الحاجز الدموي للدماغ لتحسين التركيز.", g: "1-2 جرام" },
+{ n: "فوسفاتيديل سيرين", c: "طاقة", d: "يحسن وظائف المخ ويقلل مستويات الكورتيزول بعد التمرين الشاق.", g: "300 ملجم" },
+{ n: "هوبرزين-أ (Huperzine A)", c: "طاقة", d: "يمنع تكسير الناقل العصبي 'أستيل كولين' لزيادة التركيز الخارق.", g: "200 ميكرو" },
+{ n: "جابا (GABA)", c: "مفاصل", d: "ناقل عصبي يساعد في الاسترخاء ويهدئ الجهاز العصبي قبل النوم.", g: "500-1000 ملجم" },
+{ n: "5-HTP", c: "مفاصل", d: "يرفع مستويات السيروتونين، مما يحسن المزاج ويقلل الشهية للسكريات.", g: "100-200 ملجم" },
+
+// --- تابع حوارق الدهون والصحة الأيضية ---
+{ n: "مستخلص حبوب القهوة الخضراء", c: "حوارق", d: "يحتوي على أحماض الكلوروجينيك التي تقلل امتصاص الكربوهيدرات.", g: "400 ملجم" },
+{ n: "سينفرين (Bitter Orange)", c: "حوارق", d: "يزيد من معدل الأيض الأساسي وحرق الدهون دون رفع ضغط الدم بشدة.", g: "20-50 ملجم" },
+{ n: "7-Keto-DHEA", c: "حوارق", d: "يحفز الأنزيمات المسؤولة عن حرق الدهون دون التأثير على الهرمونات الجنسية.", g: "100 ملجم" },
+{ n: "مستخلص فورسكولين", c: "حوارق", d: "يزيد من مستويات cAMP في الخلايا، مما يسرع من تكسير الدهون.", g: "250 ملجم" },
+{ n: "حبوب خل التفاح", c: "حوارق", d: "تساعد في تحسين الهضم وخفض استجابة الأنسولين بعد الوجبات.", g: "500 ملجم" },
+{ n: "كابسايسين (مستخلص الفلفل)", c: "حوارق", d: "يرفع حرارة الجسم (Thernogenesis) لزيادة حرق السعرات.", g: "حسب التركيز" },
+
+// --- تابع الفيتامينات والمعادن التخصصية ---
+{ n: "فيتامين K2 (MK-7)", c: "فيتامينات", d: "يضمن توجه الكالسيوم للعظام والأسنان بدلاً من الشرايين.", g: "100 ميكرو" },
+{ n: "بورون (Boron)", c: "فيتامينات", d: "معدن نادر يرفع مستويات التستوستيرون الحر ويقوي العظام.", g: "3-10 ملجم" },
+{ n: "مستخلص الكركم (كركمين)", c: "مفاصل", d: "مضاد التهابات قوي جداً يحمي المفاصل ويسرع الاستشفاء.", g: "500 ملجم" },
+{ n: "بروميلين (أنزيم الأناناس)", c: "فيتامينات", d: "أنزيم هاضم للبروتين ويقلل التورم والالتهابات العضلية.", g: "500 ملجم" },
+{ n: "سيلينيوم", c: "فيتامينات", d: "معدن أساسي لصحة الغدة الدرقية ومضاد أكسدة قوي.", g: "200 ميكرو" },
+{ n: "كروميوم بيكولينات", c: "حوارق", d: "يوازن سكر الدم ويقلل الرغبة الشديدة في تناول الحلويات.", g: "200-400 ميكرو" },
+{ n: "فيتامين B6 (P-5-P)", c: "فيتامينات", d: "النسخة النشطة من B6، ضرورية لتمثيل البروتين وصحة الأعصاب.", g: "50 ملجم" },
+{ n: "إن-أسيتايل سيستين (NAC)", c: "فيتامينات", d: "يرفع مستويات الجلوتاثيون ويحمي الكبد والرئتين من السموم.", g: "600 ملجم" },
+
+// --- مكملات الأداء والتحمل ---
+{ n: "نترات الشمندر (Beetroot)", c: "طاقة", d: "توسع الأوعية الدموية وتزيد من كفاءة استخدام الأكسجين.", g: "500 ملجم" },
+{ n: "فوسفات الصوديوم", c: "طاقة", d: "تزيد من القدرة الهوائية والتحمل في التمارين الطويلة.", g: "1 جرام" },
+{ n: "بيكربونات الصوديوم", c: "طاقة", d: "تعمل كمنظم للحموضة في العضلات لتأخير الفشل العضلي.", g: "300 ملجم/كجم" },
+{ n: "أغمتين سلفات", c: "طاقة", d: "مشتق من الأرجنين، يطيل مدة ضخ الدم ويحسن المزاج.", g: "500-1000 ملجم" },
+{ n: "جوارانا", c: "طاقة", d: "مصدر طبيعي للكافيين يتم امتصاصه ببطء ليعطي طاقة مستمرة.", g: "200 ملجم" },
+
+// --- مكملات الاستشفاء والمفاصل ---
+{ n: "إم إس إم (MSM)", c: "مفاصل", d: "كبريت عضوي يقلل آلام المفاصل ويحسن صحة الجلد والشعر.", g: "3 جرام" },
+{ n: "كبريتات الكوندرويتين", c: "مفاصل", d: "تعمل مع الجلوكوزامين لترميم الغضاريف ومنع تآكلها.", g: "1200 ملجم" },
+{ n: "تارت شيري (الكرز الحامض)", c: "مفاصل", d: "يقلل من تلف العضلات وآلامها بعد التمارين العنيفة.", g: "500 ملجم" },
+{ n: "أستازانثين", c: "فيتامينات", d: "أقوى مضاد أكسدة في الطبيعة يحمي الخلايا من الإجهاد التأكسدي.", g: "4-12 ملجم" },
+{ n: "بروبيوتيك (10 Billion CFU)", c: "فيتامينات", d: "بكتيريا نافعة تحسن الهضم والمناعة وامتصاص المغذيات.", g: "كبسولة يومياً" },
+
+
+    
+        ];
+
+        const container = document.getElementById('container');
+        const countDisplay = document.getElementById('counter');
+
+        function render(items) {
+            container.innerHTML = '';
+            if (items.length === 0) {
+                document.getElementById('empty').style.display = 'block';
+                countDisplay.innerText = `لا توجد نتائج`;
+                return;
+            }
+            document.getElementById('empty').style.display = 'none';
+            
+            items.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'supp-card';
+                card.innerHTML = `
+                    <span class="category-pill">${s.c}</span>
+                    <h3>${s.n}</h3>
+                    <p class="desc">${s.d}</p>
+                    <div class="dose-box">💡 الجرعة المقترحة: ${s.g}</div>
+                `;
+                container.appendChild(card);
+            });
+            countDisplay.innerText = `نعرض الآن ${items.length} مكمل غذائي من الموسوعة`;
+        }
+
+        function search() {
+            const txt = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = data.filter(i => 
+                i.n.toLowerCase().includes(txt) || 
+                i.c.toLowerCase().includes(txt) ||
+                i.d.toLowerCase().includes(txt)
+            );
+            render(filtered);
+        }
+
+        function filterCat(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if(cat === 'الكل') return render(data);
+            const filtered = data.filter(i => i.c === cat);
+            render(filtered);
+        }
+
+        // تشغيل الوظيفة عند التحميل
+        window.onload = () => {
+            render(data);
+        };
+    </script>
+</body>
+</html>
