@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عن Calzy وشركة Vexa | رؤية عربية بأيدي أحمد جمال</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00d1b2;
+            --bg-dark: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-light: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid #333;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #00d1b2, #009e86);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Info Sections */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border-bottom: 4px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        /* Developer Section */
+        .founder {
+            text-align: center;
+            background: #ffffff10;
+            padding: 50px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #00d1b2;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .verified-icon {
+            color: #1DA1F2;
+            margin-right: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 0;
+            border-top: 1px solid #333;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="hero">
+            <div class="badge">رؤية عربية 100%</div>
+            <h1>Calzy & VEXA</h1>
+            <p>نحن لا نصنع مجرد أدوات، نحن نبني مستقبل الصحة الرقمية في الوطن العربي.</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>ما هو Calzy؟</h2>
+                <p>كازي هو تطبيق ذكي صُمم ليكون المرجع الأول لكل شاب عربي يسعى لتطوير جسمه. بفضل خوارزميات دقيقة، نوفر لك حساب السعرات، الـ BMI، ونسبة الدهون، مع أدوات لمتابعة عاداتك اليومية، لنجعل الوصول للرشاقة قراراً مبنياً على العلم، لا التخمين.</p>
+            </div>
+            <div class="card">
+                <h2>شركة VEXA</h2>
+                <p>فيكسا هي شركة تقنية عربية ناشئة، تؤمن بأن المبرمج العربي قادر على منافسة المنصات العالمية. هدفنا هو تقديم حلول برمجية مبتكرة تجمع بين سهولة الاستخدام وأعلى معايير الدقة التقنية.</p>
+            </div>
+        </div>
+
+        <section class="founder">
+            <h2>كلمة المطور</h2>
+            <p>"أؤمن أن التكنولوجيا هي السلاح الأقوى لتغيير حياتنا للأفضل. بدأت Calzy كفكرة لتبسيط رحلة أي شخص رياضي، واليوم مع شركة Vexa، نحول هذه الفكرة إلى واقع يخدم الآلاف."</p>
+            <h3 style="margin-bottom: 5px;">أحمد جمال</h3>
+            <span style="opacity: 0.7;">المؤسس والمطور التنفيذي لـ Vexa</span>
+        </section>
+
+        <footer>
+            <p>صنع بفخر في العالم العربي بواسطة <strong>شركة VEXA</strong></p>
+            <p style="font-size: 12px; opacity: 0.5;">جميع الحقوق محفوظة &copy; 2026</p>
+        </footer>
+    </div>
+
+</body>
+</html>
