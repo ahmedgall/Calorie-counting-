@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calzy For Her | النسخة النسائية الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* ألوان نيون أنثوية متوافقة مع Calzy */
+            --p: #d946ef; --s: #8b5cf6; --bg: #050505; --card: #111; --text: #fff; --accent: #ff007f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 15px; overflow-x: hidden; }
+        
+        .container { max-width: 500px; margin: 0 auto; }
+
+        /* Header UI */
+        .hero { text-align: center; padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; }
+        .hero h1 { font-weight: 900; font-size: 28px; background: linear-gradient(to left, var(--p), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Interactive Configurator */
+        .glass-panel { 
+            background: var(--card); border-radius: 28px; padding: 25px; 
+            border: 1px solid rgba(217, 70, 239, 0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            margin-bottom: 25px;
+        }
+        .input-label { display: block; margin-bottom: 10px; font-size: 13px; color: var(--p); font-weight: 800; text-transform: uppercase; }
+        select { 
+            width: 100%; padding: 15px; border-radius: 16px; border: 2px solid #222; 
+            background: #000; color: white; margin-bottom: 15px; font-weight: 600;
+            appearance: none; outline: none; transition: 0.3s;
+        }
+        select:focus { border-color: var(--p); }
+
+        .btn-generate { 
+            width: 100%; padding: 18px; border-radius: 18px; border: none; 
+            background: linear-gradient(135deg, var(--p), var(--accent)); color: white; 
+            font-weight: 900; font-size: 17px; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3);
+        }
+
+        /* Timer Hub */
+        .timer-hub { 
+            background: #000; border: 2px solid var(--p); border-radius: 25px; 
+            padding: 20px; text-align: center; margin-bottom: 25px; display: none;
+            animation: zoomIn 0.4s ease;
+        }
+        #timerVal { font-size: 50px; font-weight: 900; color: white; margin-bottom: 10px; }
+        .timer-actions { display: flex; gap: 8px; justify-content: center; }
+        .btn-t { background: #222; border: none; color: white; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        .btn-t.active { background: var(--p); }
+
+        /* Multi-Angle Exercise Cards */
+        .ex-card { 
+            background: var(--card); border-radius: 24px; padding: 22px; margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.05); position: relative;
+            animation: slideUp 0.6s ease forwards; opacity: 0;
+        }
+        .ex-card::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 4px; background: var(--accent); border-radius: 0 4px 4px 0; }
+        
+        .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .ex-name { font-weight: 900; color: white; font-size: 19px; }
+        .angle-tag { background: rgba(217, 70, 239, 0.15); color: var(--p); padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+        
+        .ex-meta { display: flex; gap: 15px; margin-bottom: 15px; color: var(--accent); font-weight: 800; font-size: 13px; }
+        .ex-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
+        
+        .pro-instruction { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 14px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .pro-instruction b { color: var(--p); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="hero">
+        <h1>CALZY FOR HER ✨</h1>
+        <p style="color:#64748b; font-size:13px; font-weight:600;">نظام نحت القوام النسائي 2026</p>
+    </div>
+
+    <div class="glass-panel">
+        <label class="input-label">مكان التدريب</label>
+        <select id="place"><option value="gym">الجيم (أوزان ومقاومة)</option><option value="home">المنزل (بوزن الجسم)</option></select>
+
+        <label class="input-label">الهدف المراد تحقيقه</label>
+        <select id="goal"><option value="sculpt">نحت وتكبير (Booty Focus)</option><option value="tone">شد الجسم وحرق دهون</option></select>
+
+        <label class="input-label">المنطقة المستهدفة</label>
+        <select id="muscle">
+            <option value="glutes">الجزء السفلي (تكبير المؤخرة والأرجل)</option>
+            <option value="abs">البطن والخصر (نحت الخصر)</option>
+            <option value="upper">الجزء العلوي (شد الصدر والذراعين)</option>
+            <option value="full">جسم كامل (حرق دهون شامل)</option>
+        </select>
+        <button class="btn-generate" onclick="buildProgram()">تحديث البرنامج النسائي ⚡</button>
+    </div>
+
+    <div id="timerHub" class="timer-hub">
+        <p style="font-size: 11px; color: var(--p); font-weight: 800;">REST TIMER</p>
+        <div id="timerVal">01:00</div>
+        <div class="timer-actions">
+            <button class="btn-t active" onclick="setRest(60)">60ث</button>
+            <button class="btn-t" onclick="toggleTimer()" id="timerCtrl" style="background:var(--accent)">ابدأ</button>
+        </div>
+    </div>
+
+    <div id="workoutContainer"></div>
+</div>
+
+<script>
+    const trainingLibrary = {
+        gym: {
+            glutes: [
+                {n: "Hip Thrust", a: "عضلة المؤخرة الكبرى", v: "4 × 12", d: "التمرين رقم 1 عالمياً لتكبير ورفع المؤخرة بشكل ملحوظ.", i: "اثبتي ثانية في الأعلى واعتصري العضلة بقوة."},
+                {n: "Sumo Squat", a: "الأرجل والداخلية", v: "3 × 15", d: "يستهدف العضلات الضامة وتدوير شكل الأرجل من الخارج.", i: "افتحي قدميكِ أوسع من الكتف مع توجيه الأصابع للخارج."},
+                {n: "Glute Medius Kickback", a: "العضلة النائمة (الخفسة)", v: "3 × 15", d: "لتحسين مظهر الجوانب ومنع الخفسة في الحوض.", i: "اركل ببطء للخارج وليس للخلف فقط لاستهداف الجوانب."},
+                {n: "Romanian Deadlift", a: "شد الفخذ الخلفي", v: "3 × 12", d: "يساعد على فصل المؤخرة عن الرجل وإعطاء مظهر مشدود.", i: "حافظي على استقامة الظهر وادفعي الحوض للخلف تماماً."}
+            ],
+            abs: [
+                {n: "Dead Bug", a: "شد البطن السفلي", v: "3 × 15", d: "تمرين آمن وفعال جداً لشد ترهلات أسفل البطن.", i: "اضغطي بأسفل ظهرك على الأرض طوال التمرين."},
+                {n: "Russian Twists", a: "نحت الخصر (الخواصر)", v: "3 × 20", d: "يستهدف العضلات المائلة للحصول على خصر منحوت.", i: "حركي جذعك بالكامل وليس يديكِ فقط."}
+            ],
+            upper: [
+                {n: "Incline DB Press", a: "شد ورفع الصدر", v: "3 × 12", d: "يساعد في تحسين مظهر الثدي ومنع الترهلات.", i: "لا تستخدمي أوزان ثقيلة جداً، ركزي على التحكم."},
+                {n: "Triceps Extensions", a: "شد ترهل الذراعين", v: "3 × 15", d: "يستهدف 'الملوحة' أو الترهلات في خلفية الذراع.", i: "ثبتي كوعك بجانب رأسك تماماً."}
+            ]
+        }
+    };
+
+    let timerId; let tRem = 60; let isRunning = false;
+
+    function buildProgram() {
+        const p = document.getElementById('place').value;
+        const m = document.getElementById('muscle').value;
+        let workout = (trainingLibrary.gym[m]) ? trainingLibrary.gym[m] : trainingLibrary.gym.glutes;
+        
+        document.getElementById('timerHub').style.display = 'block';
+        const container = document.getElementById('workoutContainer');
+        container.innerHTML = workout.map((ex, idx) => `
+            <div class="ex-card" style="animation-delay: ${idx * 0.1}s">
+                <div class="ex-header">
+                    <span class="ex-name">${ex.n}</span>
+                    <span class="angle-tag">${ex.a}</span>
+                </div>
+                <div class="ex-meta">
+                    <span>🔥 الهدف: ${ex.v}</span>
+                    <span>⏱️ راحة: 60ث</span>
+                </div>
+                <p class="ex-desc">${ex.d}</p>
+                <div class="pro-instruction">
+                    <b>نصيحة Calzy:</b> ${ex.i}
+                </div>
+            </div>
+        `).join('');
+        window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+
+    function setRest(s) { tRem = s; updateTUI(); }
+    function toggleTimer() {
+        if(isRunning) { clearInterval(timerId); document.getElementById('timerCtrl').innerText = "ابدأ"; }
+        else {
+            timerId = setInterval(() => {
+                tRem--; updateTUI();
+                if(tRem <= 0) { clearInterval(timerId); alert("انتهى وقت الراحة! ابدأي المجموعة التالية 💪"); resetT(); }
+            }, 1000);
+            document.getElementById('timerCtrl').innerText = "إيقاف";
+        }
+        isRunning = !isRunning;
+    }
+    function resetT() { tRem = 60; updateTUI(); isRunning = false; document.getElementById('timerCtrl').innerText = "ابدأ"; }
+    function updateTUI() {
+        let m = Math.floor(tRem/60); let s = tRem%60;
+        document.getElementById('timerVal').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+    }
+</script>
+</body>
+</html>
