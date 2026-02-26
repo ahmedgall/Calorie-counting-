@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXA Macro-Master | 100+ Source</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --pro: #10b981; --carb: #f59e0b; --fat: #ec4899; --bg: #030712; --card: #111827; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: #f3f4f6; padding: 10px; }
+
+        .header-section { padding: 40px 20px; text-align: center; border-radius: 30px; background: radial-gradient(circle at center, #1e293b 0%, transparent 100%); }
+        
+        /* البحث والتصنيفات */
+        .controls { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 10px 0; }
+        .search-bar { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #1f2937; background: var(--card); color: white; margin-bottom: 10px; outline: none; }
+        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
+        .tab { padding: 8px 18px; border-radius: 12px; background: #1f2937; border: 1px solid #374151; color: #94a3b8; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: 800; }
+        .tab.active { background: #6366f1; color: white; border-color: #6366f1; }
+
+        /* الشبكة */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 15px; }
+        .item-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid #1f2937; display: flex; flex-direction: column; gap: 8px; transition: 0.2s; }
+        .item-card:hover { border-color: #4b5563; transform: translateY(-3px); }
+
+        .badge { font-size: 9px; padding: 2px 8px; border-radius: 5px; width: fit-content; font-weight: 900; text-transform: uppercase; }
+        .pro-b { background: #10b98122; color: var(--pro); }
+        .carb-b { background: #f59e0b22; color: var(--carb); }
+        .fat-b { background: #ec489922; color: var(--fat); }
+
+        .name { font-size: 14px; font-weight: 900; color: #fff; }
+        .meta { font-size: 10px; color: #6b7280; }
+        .price-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #1f2937; }
+        .price-val { font-size: 16px; font-weight: 900; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <h1 style="font-size: 28px; font-weight: 900;">calzy <span style="color: #6366f1;">ENCYCLOPEDIA</span></h1>
+        <p style="font-size: 11px; color: #64748b; margin-top: 5px;">أكبر قاعدة بيانات تغذية رياضية في مصر</p>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="search" class="search-bar" placeholder="ابحث عن: شوفان، كبدة، بذور كتان..." onkeyup="filterAll()">
+        <div class="filter-tabs">
+            <button class="tab active" onclick="filterCat('all', this)">الكل</button>
+            <button class="tab" onclick="filterCat('pro', this)">بروتين 🥩</button>
+            <button class="tab" onclick="filterCat('carb', this)">كارب 🍚</button>
+            <button class="tab" onclick="filterCat('fat', this)">دهون 🥑</button>
+            <button class="tab" onclick="filterCat('veg', this)">خضروات 🥗</button>
+        </div>
+    </div>
+
+    <div class="market-grid" id="mainGrid"></div>
+
+<script>
+    const data = [
+        // بروتين (20+ عنصر)
+        { n: "صدور دجاج", t: "pro", v: "31g", p: 215, b: "عالي" },
+        { n: "كبدة بقري", t: "pro", v: "20g", p: 380, b: "فيتامينات" },
+        { n: "ارانب", t: "pro", v: "21g", p: 250, b: "خالي دهون" },
+        { n: "بيض بلدي", t: "pro", v: "6g", p: 170, b: "أساسي" },
+        { n: "جبنة قريش", t: "pro", v: "11g", p: 90, b: "كازين" },
+        { n: "تونه معلبة", t: "pro", v: "25g", p: 60, b: "سريع" },
+        { n: "عدس اصفر", t: "pro", v: "9g", p: 65, b: "نباتي" },
+        { n: "ترمس مسلوق", t: "pro", v: "16g", p: 80, b: "سناكس" },
+        { n: "كبد وقوانص", t: "pro", v: "18g", p: 110, b: "توفير" },
+        { n: "سمك ماكريل", t: "pro", v: "19g", p: 130, b: "أوميجا 3" },
+        { n: "حمص مسلوق", t: "pro", v: "9g", p: 70, b: "نباتي" },
+        { n: "لحم جملي", t: "pro", v: "22g", p: 350, b: "قوي" },
+        
+        // كارب (20+ عنصر)
+        { n: "أرز بسمتي", t: "carb", v: "25g", p: 70, b: "طاقة" },
+        { n: "فريك بلدي", t: "carb", v: "20g", p: 60, b: "ألياف عالية" },
+        { n: "برغل ناعم", t: "carb", v: "18g", p: 55, b: "توفير" },
+        { n: "بطاطس مشوية", t: "carb", v: "17g", p: 20, b: "امتصاص سريع" },
+        { n: "بطاطا حلوة", t: "carb", v: "20g", p: 15, b: "قبل التمرين" },
+        { n: "شوفان خشن", t: "carb", v: "60g", p: 115, b: "شبع طويل" },
+        { n: "مكرونة قمح", t: "carb", v: "30g", p: 35, b: "طاقة" },
+        { n: "عيش سن", t: "carb", v: "45g", p: 5, b: "ألياف" },
+        { n: "كسكسي", t: "carb", v: "23g", p: 65, b: "تغيير" },
+        { n: "كينوا", t: "carb", v: "21g", p: 250, b: "ممتاز" },
+
+        // دهون صحية (15+ عنصر)
+        { n: "زيت زيتون بكر", t: "fat", v: "100%", p: 350, b: "هرمونات" },
+        { n: "سوداني مقشر", t: "fat", v: "49g", p: 130, b: "أرخص مصدر" },
+        { n: "لب سوبر", t: "fat", v: "47g", p: 160, b: "زنك" },
+        { n: "زيت جوز هند", t: "fat", v: "100%", p: 400, b: "طاقة" },
+        { n: "سمسم محمص", t: "fat", v: "50g", p: 120, b: "كالسيوم" },
+        { n: "طحينة بيضاء", t: "fat", v: "54g", p: 180, b: "طاقة" },
+        { n: "أفوكادو", t: "fat", v: "15g", p: 70, b: "صحي" },
+
+        // خضروات (الغلابة والوحوش)
+        { n: "سبانخ فريش", t: "veg", v: "حديد", p: 15, b: "بوباي" },
+        { n: "بروكلي", t: "veg", v: "ألياف", p: 60, b: "ديتوكس" },
+        { n: "جرجير", t: "veg", v: "نترات", p: 5, b: "باور" },
+        { n: "بنجر", t: "veg", v: "نترات", p: 20, b: "تحمل" }
+    ];
+
+    function render(list) {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = list.map(item => `
+            <div class="item-card">
+                <span class="badge ${item.t}-b">${item.t.toUpperCase()}</span>
+                <div class="name">${item.n}</div>
+                <div class="meta">${item.v} | ${item.b}</div>
+                <div class="price-info">
+                    <div class="price-val">${item.p}<small style="font-size:9px"> ج.م</small></div>
+                    <div style="font-size:10px; color:#10b981">● متاح</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterCat(cat, btn) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        if(cat === 'all') return render(data);
+        render(data.filter(i => i.t === cat));
+    }
+
+    function filterAll() {
+        const q = document.getElementById('search').value.toLowerCase();
+        render(data.filter(i => i.n.toLowerCase().includes(q)));
+    }
+
+    render(data);
+</script>
+</body>
+</html>
