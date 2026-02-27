@@ -1088,6 +1088,42 @@ window.addEventListener('beforeunload', function() {
     
 </script>
 
+<script>
+    
+    // كود إرسال إشعار عند إغلاق الاحتياج اليومي
+function trackGoalCompletion() {
+    const today = new Date().toLocaleDateString('en-GB');
+    const hasSentToday = localStorage.getItem('goal_reached_notified_date');
+
+    // التأكد إن المستخدم خلص الـ Setup وسجل وجبات
+    if (db.setup && db.current.c >= db.goals.c && hasSentToday !== today) {
+        
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        
+        const message = `🎯 **هدف محقق!**\n\n👤 المستخدم: ${db.name}\n🔥 السعرات: ${db.current.c} / ${db.goals.c}\n💪 الحالة: قفل احتياجه بنجاح\n📅 التاريخ: ${today}`;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: "Markdown"
+            })
+        }).then(() => {
+            // تسجيل إنه تم الإرسال النهاردة عشان ميبعتش مع كل إضافة وجبة جديدة
+            localStorage.setItem('goal_reached_notified_date', today);
+        });
+    }
+}
+
+// تعديل بسيط: لازم نشغل الدالة دي كل ما المستخدم يضيف وجبة
+// ضيف السطر ده جوه دالة confirmAdd() في آخرها
+// trackGoalCompletion();
+
+    
+</script>
 
     
     
