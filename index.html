@@ -1051,6 +1051,45 @@ window.addEventListener('load', sendDailyReport);
     
 </script>
 
+
+    <script>
+    
+    // كود حساب مدة البقاء في الموقع وإرسالها للتليجرام
+let startTime = Date.now(); // تسجيل لحظة الدخول
+
+window.addEventListener('beforeunload', function() {
+    let endTime = Date.now();
+    let timeSpent = (endTime - startTime) / 1000; // حساب الثواني
+    
+    // تحويل الثواني لدقائق وثواني بشكل شيك
+    let minutes = Math.floor(timeSpent / 60);
+    let seconds = Math.floor(timeSpent % 60);
+    let timeString = minutes > 0 ? `${minutes} دقيقة و ${seconds} ثانية` : `${seconds} ثانية`;
+
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const savedData = localStorage.getItem('calzy_vScientist');
+    
+    if (isRegistered === 'true') {
+        let userName = "مستخدم";
+        if (savedData) {
+            userName = JSON.parse(savedData).name || "مستخدم";
+        }
+
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        const message = `⏱️ تقرير مدة الجلسة:\n👤 المستخدم: ${userName}\n⌛ قعد في الموقع: ${timeString}\n🚪 الحالة: خرج الآن`;
+
+        // بنستخدم navigator.sendBeacon عشان نضمن الرسالة تتبعت حتى لو الصفحة بتتقفل
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+        navigator.sendBeacon(url);
+    }
+});
+
+    
+</script>
+
+
+    
     
 </body>
     </html>
