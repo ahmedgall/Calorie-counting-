@@ -1,6 +1,6 @@
 {
   "name": "Calzy OS",
-  "short_name": "Calzy os",
+  "short_name": "Calzy",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
