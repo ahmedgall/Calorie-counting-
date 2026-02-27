@@ -1005,5 +1005,52 @@ window.addEventListener('load', function() {
     
 </script>
 
+<script>
+    
+// كود إرسال تقرير الزوار اليومي
+function sendDailyReport() {
+    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+    const CHAT_ID = "6387342853";
+    
+    const today = new Date().toLocaleDateString('en-GB'); // تاريخ اليوم
+    const lastReportDate = localStorage.getItem('last_report_date');
+    
+    // 1. تحديث عداد الزيارات الكلي في المتصفح
+    let visitCount = parseInt(localStorage.getItem('daily_visit_count') || "0");
+    visitCount++;
+    localStorage.setItem('daily_visit_count', visitCount);
+
+    // 2. التحقق: هل بدأ يوم جديد لإرسال تقرير اليوم السابق؟
+    if (lastReportDate && lastReportDate !== today) {
+        const yesterdayCount = localStorage.getItem('daily_visit_count') || 0;
+        
+        const reportMessage = `📊 **تقرير كالزي اليومي**\n\n📅 التاريخ: ${lastReportDate}\n👥 عدد الزيارات: ${yesterdayCount}\n🚀 استمر في التطوير يا بطل!`;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: reportMessage,
+                parse_mode: "Markdown"
+            })
+        }).then(() => {
+            // تصفير العداد لليوم الجديد
+            localStorage.setItem('daily_visit_count', "1");
+            localStorage.setItem('last_report_date', today);
+        });
+    } else if (!lastReportDate) {
+        // أول مرة تشغيل للتطبيق
+        localStorage.setItem('last_report_date', today);
+    }
+}
+
+// تشغيل الدالة مع تحميل الصفحة
+window.addEventListener('load', sendDailyReport);
+    
+    
+</script>
+
+    
 </body>
     </html>
