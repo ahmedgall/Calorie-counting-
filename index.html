@@ -243,6 +243,10 @@
             <div class="macro-box"><small>دهون</small><b id="fVal">0/0</b></div>
         </div>
 
+
+
+
+
         <div class="glass-card">
             <div style="display:flex; justify-content:space-between; align-items:center">
                 <span><svg style="width:16px; height:16px; display:inline; vertical-align:middle; color:var(--w)" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1.323l.395.072 4 4 .707.707a1 1 0 01-1.414 1.414L14 9.828V15a2 2 0 01-2 2H8a2 2 0 01-2-2V9.828l-.707.707a1 1 0 01-1.414-1.414l4.707-4.707V3a1 1 0 011-1z"></path></svg> الماء <small id="wTxt" style="color:var(--w)">0/3 L</small></span>
@@ -1052,7 +1056,8 @@ window.addEventListener('load', sendDailyReport);
 </script>
 
 
-    <script>
+
+<script>
     
     // كود حساب مدة البقاء في الموقع وإرسالها للتليجرام
 let startTime = Date.now(); // تسجيل لحظة الدخول
@@ -1087,6 +1092,7 @@ window.addEventListener('beforeunload', function() {
 
     
 </script>
+
 
 <script>
     
@@ -1125,7 +1131,25 @@ function trackGoalCompletion() {
     
 </script>
 
-    
-    
-</body>
-    </html>
+
+
+
+<div id="ban-overlay" style="
+    display: none; 
+    position: fixed; 
+    inset: 0; 
+    z-index: 10000;
+    background: radial-gradient(circle, #1a0505 0%, #07090c 100%); 
+    backdrop-filter: blur(25px);
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    text-align: center; 
+    padding: 30px; 
+    font-family: 'Cairo', sans-serif;
+    color: white;
+">
+    <div id="ban-card" style="max-width: 450px; transition: transform 0.3s;">
+        <div id="ban-icon" style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.5));">⚠️</div>
+        <h1 id="ban-title" style="color: #ef4444; font-size: 35px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase;">تنبيه أمني!</h1>
+        <p id="ban-msg" style="
