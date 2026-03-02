@@ -2,143 +2,6 @@
 <html lang="ar" dir="rtl">
 <head>
 
-<div id="notification-container"></div>
-
-<style>
-    #notification-container {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 999999; /* رقم عالي جداً لضمان الظهور فوق الكل */
-        width: 90%;
-        max-width: 380px;
-        pointer-events: none;
-        direction: rtl;
-        font-family: 'Cairo', sans-serif;
-    }
-
-    .calzy-toast {
-        background: rgba(20, 20, 20, 0.75);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 15px;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        pointer-events: auto;
-        touch-action: none; /* مهم جداً للسحب */
-        transition: transform 0.3s ease, opacity 0.3s;
-        cursor: grab;
-        margin-bottom: 10px;
-    }
-
-    .toast-icon {
-        font-size: 22px;
-        background: rgba(139, 92, 246, 0.2);
-        width: 45px;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-    }
-
-    .toast-content h4 { margin: 0; font-size: 14px; color: #8b5cf6; }
-    .toast-content p { margin: 3px 0 0 0; font-size: 12px; color: #d1d5db; }
-
-    /* أنيميشن الدخول */
-    @keyframes slideIn {
-        from { transform: translateY(-100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    .calzy-toast { animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-</style>
-
-<script>
-const calzyMessages = [
-    { title: "تذكير الجيم 🏋️‍♂️", body: "هل نزلت الجيم النهاردة ولا لسه؟ متضيعش اليوم!", icon: "💪" },
-    { title: "سؤال البروتين 🍗", body: "هل كملت احتياجك من البروتين النهاردة؟", icon: "🍗" },
-    { title: "نصيحة تقنية 💡", body: "اشرب كوباية مية دلوقتي، الهيدرات سر الأداء.", icon: "💧" },
-    { title: "عاش يا وحش 🔥", body: "الاستمرارية هي اللي بتصنع الفرق الحقيقي.", icon: "🚀" }
-];
-
-function showNotification() {
-    const container = document.getElementById('notification-container');
-    const data = calzyMessages[Math.floor(Math.random() * calzyMessages.length)];
-    
-    const toast = document.createElement('div');
-    toast.className = 'calzy-toast';
-    toast.innerHTML = `
-        <div class="toast-icon">${data.icon}</div>
-        <div class="toast-content">
-            <h4>${data.title}</h4>
-            <p>${data.body}</p>
-        </div>
-    `;
-
-    container.appendChild(toast);
-
-    // متغيرات السحب
-    let startY = 0;
-    let currentY = 0;
-
-    // اختفاء تلقائي بعد 7 ثواني
-    const timer = setTimeout(() => dismiss(), 7000);
-
-    function dismiss() {
-        toast.style.transform = 'translateY(-150%) scale(0.8)';
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 400);
-    }
-
-    // منطق السحب (Touch & Mouse)
-    const startAction = (e) => {
-        startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-        toast.style.transition = 'none';
-    };
-
-    const moveAction = (e) => {
-        if (startY === 0) return;
-        const y = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-        currentY = y - startY;
-        
-        if (currentY < 0) { // سحب للأعلى فقط
-            toast.style.transform = `translateY(${currentY}px)`;
-        }
-    };
-
-    const endAction = () => {
-        if (currentY < -50) { // لو سحب أكتر من 50px
-            clearTimeout(timer);
-            dismiss();
-        } else {
-            toast.style.transition = 'transform 0.3s ease';
-            toast.style.transform = 'translateY(0)';
-        }
-        startY = 0;
-        currentY = 0;
-    };
-
-    toast.addEventListener('touchstart', startAction);
-    window.addEventListener('touchmove', moveAction);
-    window.addEventListener('touchend', endAction);
-
-    toast.addEventListener('mousedown', startAction);
-    window.addEventListener('mousemove', moveAction);
-    window.addEventListener('mouseup', endAction);
-}
-
-// تشغيل أول إشعار بعد 3 ثواني من فتح الموقع
-setTimeout(showNotification, 3000);
-
-// تكرار الإشعارات كل 5 دقائق
-setInterval(showNotification, 300000);
-</script>
 
 
 
@@ -1179,4 +1042,125 @@ function updateStreak() {
 
     if (streakData.lastDate !== today) {
         const lastDate = new Date(streakData.lastDate);
-        const curr
+        const currentDate = new Date(today);
+        const diff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (diff === 1) streakData.count++; 
+        else if (diff > 1 || streakData.lastDate === "") streakData.count = 1;
+
+        streakData.lastDate = today;
+        localStorage.setItem('calzy_streak', JSON.stringify(streakData));
+    }
+    document.getElementById('streakDays').innerText = streakData.count;
+}
+// استدعها في onload
+updateStreak();
+
+
+</script>
+
+
+
+<div id="phoneOverlay" style="position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;">
+    
+    
+    
+    <h1 style="text-align: center; margin-bottom: 20px; font-weight: 900; color: white;">CALZY <span style="color:#8b5cf6">2026</span></h1>
+    <h2 style="margin-bottom: 10px; color: #8b5cf6; font-weight: 900;">تحقق من الهوية 🛡️</h2>
+    <p style="margin-bottom: 20px; color: #94a3b8; font-size: 14px;">برجاء إدخال رقم الهاتف لتفعيل النسخة العلمية</p>
+    <input type="tel" id="userPhone" placeholder="رقم الهاتف (واتساب)" style="width: 100%; max-width: 300px; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; text-align: center;">
+   
+   
+   
+    <button onclick="submitUserPhone()" style="width: 100%; max-width: 300px; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: #8b5cf6; color: white; cursor: pointer;">فتح الموقع الآن ✅</button>
+
+
+
+
+</div>
+
+
+
+
+<script>
+// دالة التحقق من التسجيل عند فتح الصفحة
+function checkPhoneRegistration() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const overlay = document.getElementById('phoneOverlay');
+    if (isRegistered === 'true') {
+        overlay.style.display = 'none';
+    }
+}
+
+// دالة إرسال البيانات وتخزين الحالة
+async function submitUserPhone() {
+    const phoneInput = document.getElementById('userPhone');
+    const phone = phoneInput.value;
+    const overlay = document.getElementById('phoneOverlay');
+
+    if (phone.length < 10) {
+        alert("برجاء إدخال رقم هاتف صحيح");
+        return;
+    }
+
+    // بياناتك التي أرسلتها
+    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+    const CHAT_ID = "6387342853";
+    
+    const message = `🚀 سجل مستخدم جديد:\n📱 الرقم: ${phone}\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+    try {
+        // 1. حفظ الحالة وإخفاء النافذة فوراً
+        localStorage.setItem('calzy_phone_registered', 'true');
+        overlay.style.display = 'none';
+
+        // 2. إرسال البيانات للبوت
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message
+            })
+        });
+
+        alert("تم التفعيل بنجاح! أهلاً بك.");
+        
+        // 3. التأكد من ظهور نافذة الـ Setup لو أول مرة
+        if(!localStorage.getItem('calzy_vScientist')) {
+            document.getElementById('setupLayer').classList.remove('hidden');
+        }
+
+    } catch (error) {
+        // في حال حدوث أي خطأ نضمن دخول المستخدم للموقع
+        overlay.style.display = 'none';
+        localStorage.setItem('calzy_phone_registered', 'true');
+    }
+}
+
+// استدعاء التحقق عند التحميل
+window.addEventListener('load', checkPhoneRegistration);
+
+</script>
+
+<script>
+  
+  // كود إشعار دخول مستخدم قديم (إضافة مستقلة)
+window.addEventListener('load', function() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const savedData = localStorage.getItem('calzy_vScientist');
+    
+    // مش هنبعت غير لو المستخدم مسجل رقمه فعلاً قبل كده
+    if (isRegistered === 'true') {
+        let userName = "مستخدم";
+        let userPhone = "رقم غير مسجل محلياً";
+        
+        // محاولة جلب الاسم من بيانات الـ Setup
+        if (savedData) {
+            const dbData = JSON.parse(savedData);
+            userName = dbData.name || "مستخدم";
+        }
+        
+        // إرسال الإشعار لتليجرام
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1
