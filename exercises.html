@@ -3,73 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calzy Pro Training | النسخة الاحترافية</title>
+    <title>Calzy Train Pro | الموسوعة الكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --p: #8b5cf6; --s: #10b981; --bg: #030712; --card: #111827; --text: #f9fafb; --accent: #3b82f6;
-        }
+        :root { --p: #8b5cf6; --s: #10b981; --bg: #030712; --card: #111827; --text: #f9fafb; --accent: #3b82f6; --d: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; overflow-x: hidden; }
-        
+        body { background: var(--bg); color: var(--text); padding: 15px; }
         .container { max-width: 500px; margin: 0 auto; }
-
-        /* Header UI */
-        .hero { text-align: center; padding: 30px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; }
-        .hero h1 { font-weight: 900; font-size: 30px; background: linear-gradient(to left, var(--p), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .hero h1 { font-weight: 900; font-size: 28px; background: linear-gradient(to left, var(--p), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* Interactive Configurator */
-        .glass-panel { 
-            background: var(--card); border-radius: 28px; padding: 25px; 
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 25px;
-        }
-        .input-label { display: block; margin-bottom: 10px; font-size: 13px; color: var(--p); font-weight: 800; text-transform: uppercase; }
-        select { 
-            width: 100%; padding: 15px; border-radius: 16px; border: 2px solid #1f2937; 
-            background: #0f172a; color: white; margin-bottom: 15px; font-weight: 600;
-            appearance: none; outline: none; transition: 0.3s;
-        }
-        select:focus { border-color: var(--p); }
+        .glass-panel { background: var(--card); border-radius: 25px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+        .input-label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--p); font-weight: 800; }
+        select { width: 100%; padding: 14px; border-radius: 14px; border: 2px solid #1f2937; background: #0f172a; color: white; margin-bottom: 12px; font-weight: 600; outline: none; }
+        
+        .btn-generate { width: 100%; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--p), #6d28d9); color: white; font-weight: 900; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-generate:active { transform: scale(0.98); }
 
-        .btn-generate { 
-            width: 100%; padding: 18px; border-radius: 18px; border: none; 
-            background: linear-gradient(135deg, var(--p), #6d28d9); color: white; 
-            font-weight: 900; font-size: 17px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
-        }
-
-        /* Modern Timer */
-        .timer-hub { 
-            background: #020617; border: 2px solid var(--p); border-radius: 25px; 
-            padding: 20px; text-align: center; margin-bottom: 25px; display: none;
-            animation: zoomIn 0.4s ease;
-        }
-        #timerVal { font-size: 55px; font-weight: 900; color: white; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
-        .timer-actions { display: flex; gap: 8px; justify-content: center; }
-        .btn-t { background: #1e293b; border: none; color: white; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 12px; }
+        .timer-hub { background: #020617; border: 2px solid var(--p); border-radius: 20px; padding: 15px; text-align: center; margin-bottom: 20px; display: none; }
+        #timerVal { font-size: 45px; font-weight: 900; color: white; margin-bottom: 10px; }
+        .timer-actions { display: flex; gap: 5px; justify-content: center; }
+        .btn-t { background: #1e293b; border: none; color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 11px; }
         .btn-t.active { background: var(--p); }
 
-        /* Multi-Angle Exercise Cards */
-        .ex-card { 
-            background: var(--card); border-radius: 24px; padding: 22px; margin-bottom: 18px;
-            border: 1px solid rgba(255,255,255,0.05); position: relative;
-            animation: slideUp 0.6s ease forwards; opacity: 0;
-        }
-        .ex-card::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 4px; background: var(--p); border-radius: 0 4px 4px 0; }
-        
+        .ex-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); animation: slideUp 0.5s ease forwards; }
         .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .ex-name { font-weight: 900; color: white; font-size: 19px; }
-        .angle-tag { background: rgba(139, 92, 246, 0.15); color: var(--p); padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; }
-        
-        .ex-meta { display: flex; gap: 15px; margin-bottom: 15px; color: var(--s); font-weight: 800; font-size: 13px; }
-        .ex-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px; }
-        
-        .pro-instruction { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 14px; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .pro-instruction b { color: var(--accent); }
+        .ex-name { font-weight: 900; color: white; font-size: 17px; }
+        .angle-tag { background: rgba(139, 92, 246, 0.15); color: var(--p); padding: 3px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; }
+        .ex-gif { width: 100%; height: 220px; border-radius: 15px; object-fit: cover; margin-bottom: 12px; border: 1px solid #1f2937; background: #000; }
+        .ex-meta { display: flex; gap: 10px; margin-bottom: 10px; color: var(--s); font-weight: 800; font-size: 12px; }
+        .ex-desc { font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 12px; }
+        .pro-instruction { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -77,30 +43,30 @@
 <div class="container">
     <div class="hero">
         <h1>CALZY TRAIN PRO</h1>
-        <p style="color:#64748b; font-size:14px; font-weight:600;">نظام التدريب المتقدم 2026</p>
+        <p style="color:#64748b; font-size:12px; font-weight:600;">نظام التدريب الموسع 2026</p>
     </div>
 
     <div class="glass-panel">
-        <label class="input-label">الإعدادات الأساسية</label>
-        <div style="display: flex; gap: 10px;">
-            <select id="place"><option value="gym">الجيم الاحترافي</option><option value="home">التمارين المنزلية</option></select>
-            <select id="goal"><option value="bulk">تضخيم عضلي</option><option value="cut">تنشيف ورسم</option></select>
+        <label class="input-label">الهدف التدريبي</label>
+        <div style="display: flex; gap: 8px;">
+          
+            <select id="goal"><option value="bulk">تضخيم</option><option value="cut">تنشيف</option></select>
         </div>
 
-        <label class="input-label">العضلة المستهدفة (Full Focus)</label>
+        <label class="input-label">اختر العضلة</label>
         <select id="muscle">
-            <option value="chest">الصدر (جميع الزوايا + الترقوة)</option>
-            <option value="back">الظهر (العرض + السماكة + القطنية)</option>
-            <option value="legs">الأرجل (كوادز + خلفيات + سمانة)</option>
-            <option value="shoulders">الأكتاف (أمامي + جانبي + خلفي)</option>
-            <option value="arms">الذراع (باي + تراي + ساعد)</option>
-            <option value="abs">البطان والخواصر (Core)</option>
+            <option value="chest">الصدر - Chest</option>
+            <option value="back">الظهر - Back</option>
+            <option value="legs">الأرجل - Legs</option>
+            <option value="shoulders">الأكتاف - Shoulders</option>
+            <option value="arms">الذراع - Arms</option>
+            
         </select>
-        <button class="btn-generate" onclick="buildProgram()">تحديث البرنامج التدريبي ⚡</button>
+        <button class="btn-generate" onclick="buildProgram()">توليد التمارين الآن ⚡</button>
     </div>
 
     <div id="timerHub" class="timer-hub">
-        <p style="font-size: 11px; color: var(--p); font-weight: 800; letter-spacing: 1px;">REST TIMER</p>
+        <p style="font-size: 10px; color: var(--p); font-weight: 800;">عداد الراحة</p>
         <div id="timerVal">01:00</div>
         <div class="timer-actions">
             <button class="btn-t" onclick="setRest(45)">45ث</button>
@@ -117,49 +83,77 @@
     const trainingLibrary = {
         gym: {
             chest: [
-                {n: "Flat Barbell Bench", a: "منتصف الصدر", v: "4 × 8", d: "التمرين الأساسي لزيادة القوة وبناء سماكة الصدر الشاملة.", i: "ثبت قدميك جيداً واعتصر لوحي الكتف للخلف لتركيز الضغط على الصدر."},
-                {n: "Incline Dumbbell Press", a: "الصدر العالي (الترقوة)", v: "3 × 10", d: "يركز على الجزء العلوي لإعطاء مظهر ممتلئ تحت عظمة الترقوة.", i: "اجعل الميل 30-45 درجة فقط لتجنب إجهاد الكتف."},
-                {n: "High-to-Low Cable Fly", a: "أسفل الصدر", v: "3 × 15", d: "يستهدف الجزء السفلي والداخلي لرسم خط الصدر السفلي.", i: "تخيل أنك تعانق شجرة كبيرة واعتصر العضلة في النهاية."},
-                {n: "Dumbbell Pullover", a: "توسيع القفص الصدري", v: "3 × 12", d: "تمرين كلاسيكي يعمل على الصدر والمنشارية الأمامية.", i: "استنشق بعمق عند النزول بالوزن لزيادة الإطالة."}
+                {n: "Flat Bench Press", a: "قوة عامة", v: "4 × 8", d: "بناء أساسي لسماكة الصدر.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif", i: "ثبت قدميك جيداً."},
+                {n: "Incline DB Press", a: "الصدر العالي", v: "3 × 10", d: "لمظهر ممتلئ تحت الترقوة.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Dumbbell-Press.gif", i: "الميل 30 درجة فقط."},
+           
+                {n: "Machine Fly", a: "عزل وتوسيع", v: "3 × 15", d: "إطالة رائعة لألياف الصدر.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif", i: "افرد صدرك للخارج."},
+                {n: "Cable Crossover", a: "الصدر الداخلي", v: "3 × 15", d: "تحديد الخط المنتصف.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Crossover.gif", i: "توقف ثانية عند التلاقي."},
+
+                {n: "DB Pullover", a: "توسيع القفص الصدري", v: "3 × 12", d: "تمرين كلاسيكي رائع.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Pullover.gif", i: "تنفس بعمق عند النزول."},
+            
             ],
             back: [
-                {n: "Weighted Pull-ups", a: "العرض الشامل", v: "4 × التعب", d: "أفضل تمرين لعرض الظهر ورسم شكل الـ V الحقيقي.", i: "اسحب بصدرك للأعلى ولا تدع كتفك ينحني للأمام."},
-                {n: "T-Bar Row", a: "سماكة الظهر", v: "4 × 8", d: "يزيد من كثافة عضلات منتصف الظهر والترابيس.", i: "حافظ على ثبات جذعك ولا تستخدم المرجحة لرفع الوزن."},
-                {n: "Lat Pulldown (Close Grip)", a: "اللاتس السفلي", v: "3 × 12", d: "يستهدف أسفل عضلة المجنص بالقرب من الخصر.", i: "اسحب المسطرة لأسفل صدرك مباشرة واعتصر ظهرك."},
-                {n: "Deadlift / Rack Pulls", a: "الظهر السفلي (القطنية)", v: "3 × 6", d: "لبناء قوة جبارة في أسفل الظهر والجسم بالكامل.", i: "حافظ على ظهرك مفروداً تماماً لضمان سلامة العمود الفقري."}
+                {n: "Deadlift", a: "شامل", v: "3 × 6", d: "ملك تمارين القوة.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif", i: "ظهرك مفرود تماماً."},
+                {n: "Lat Pulldown", a: "عرض", v: "4 × 10", d: "بناء شكل الـ V.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif", i: "اسحب بكوعك للخلف."},
+            
+                {n: "Seated Row", a: "منتصف الظهر", v: "3 × 12", d: "يركز على الترابيس.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif", i: "اعتصر لوحي الكتف."},
+                {n: "One Arm Row", a: "عزل", v: "3 × 10", d: "توازن العضلات.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Row.gif", i: "اسحب نحو الحوض."},
+                {n: "Pull-ups", a: "عرض شامل", v: "3 × Max", d: "أفضل تمرين وزن جسم.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Pull-up.gif", i: "صدرك للأعلى."},
+            
+                
             ],
             legs: [
-                {n: "Barbell Back Squat", a: "الأرجل الشاملة", v: "4 × 8", d: "ملك التمارين لبناء عضلات الرجل بالكامل وزيادة الهرمونات.", i: "انزل بخصرك أسفل مستوى الركبة للحصول على أقصى استفادة."},
-                {n: "Romanian Deadlift", a: "الفخذ الخلفي (Hamstrings)", v: "4 × 10", d: "يركز على إطالة وتقوية العضلات الخلفية والمؤخرة.", i: "انزل بالوزن بالقرب من رجليك مع دفع الحوض للخلف."},
-                {n: "Leg Extension", a: "عزل الأماميات (Quads)", v: "3 × 15", d: "لرسم تفاصيل العضلة الأمامية وفصل رؤوسها.", i: "ثبت جسمك في المقعد واعتصر العضلة في الأعلى."},
-                {n: "Standing Calf Raises", a: "السمانة", v: "4 × 20", d: "لبناء عضلات سمانة قوية ومتناسقة مع الرجل.", i: "توقف لثانية في الأعلى وقم بإطالة كاملة في الأسفل."}
+                {n: "Barbell Squat", a: "شامل", v: "4 × 8", d: "أساس قوة الرجل.", g: "https://gymvisual.com/animated-gifs/14133-barbell-anderson-squat.html?search_query=Barbell+Squat++&results=243", i: "انزل بخصرك لأسفل."},
+                {n: "Leg Press", a: "ضخامة", v: "3 × 12", d: "دفع أوزان ثقيلة.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Press.gif", i: "لا تقفل ركبتك في الأعلى."},
+                {n: "Leg Extension", a: "أماميات", v: "3 × 15", d: "تحديد رؤوس الفخذ.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Extension.gif", i: "اعتصر في القمة."},
+                {n: "Lying Leg Curl", a: "خلفيات", v: "3 × 12", d: "عزل الفخذ الخلفي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Lying-Leg-Curl.gif", i: "حوضك ثابت على الجهاز."},
+                {n: "Lunges", a: "توازن", v: "3 × 12", d: "قوة وتناسق.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif", i: "ظهرك مستقيم."},
+                {n: "Romanian Deadlift", a: "خلفيات وقوة", v: "4 × 10", d: "إطالة جبارة للخلفيات.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Romanian-Deadlift.gif", i: "ادفع الحوض للخلف."},
+                {n: "Calf Raises", a: "سمانة", v: "4 × 20", d: "بناء السمانة.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif", i: "مدى حركي كامل."},
+                {n: "Hip Adduction", a: "داخلي", v: "3 × 15", d: "تقوية العضلات الضامة.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Lever-Seated-Hip-Adduction.gif", i: "تحكم في الفتح."}
             ],
             shoulders: [
-                {n: "Overhead Press", a: "الكتف الأمامي والشامل", v: "4 × 8", d: "لبناء أكتاف عريضة وقوة دفع جبارة.", i: "لا تحرك رأسك للأمام كثيراً وحافظ على استقامة جسمك."},
-                {n: "Dumbbell Lateral Raise", a: "الرأس الجانبي (العرض)", v: "4 × 15", d: "التمرين المسؤول عن عرض الأكتاف وشكلها المكور.", i: "اجعل كوعك أعلى قليلاً من معصم يدك أثناء الرفع."},
-                {n: "Face Pulls", a: "الكتف الخلفي والترابيس", v: "3 × 15", d: "تمرين ضروري لتوازن الكتف ومنع الإصابات.", i: "اسحب الحبل باتجاه جبهتك وافتح يديك للخارج."},
-                {n: "Dumbbell Shrugs", a: "عضلات الترابيس", v: "3 × 12", d: "لإعطاء مظهر قوي للرقبة وأعلى الظهر.", i: "ارفع كتفك باتجاه أذنيك ولا تقم بتدوير الكتف."}
+                {n: "Overhead Press", a: "شامل", v: "4 × 8", d: "عرض وضخامة الكتف.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Shoulder-Press.gif", i: "شد بطنك جيداً."},
+                {n: "Lateral Raise", a: "جانبي", v: "4 × 15", d: "سر تدوير الكتف.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif", i: "ارفع بمستوى الكتف."},
+                {n: "Front Raise", a: "أمامي", v: "3 × 12", d: "عزل الأمامي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Front-Raise.gif", i: "بدون مرجحة."},
+                {n: "Face Pulls", a: "خلفي", v: "3 × 15", d: "تحسين القوام.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Face-Pull.gif", i: "اسحب للجبهة."},
+                {n: "Arnold Press", a: "شامل ذكي", v: "3 × 10", d: "يضرب كل الزوايا.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif", i: "دوران محكم."},
+                {n: "Reverse Fly", a: "خلفي عزل", v: "3 × 15", d: "توازن الكتف.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Reverse-Fly.gif", i: "سحب هادئ."},
+                {n: "Upright Row", a: "ترابيس وجانبي", v: "3 × 12", d: "قمة الكتف.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Upright-Row.gif", i: "كوعك للأعلى."},
+           
             ],
             arms: [
-                {n: "EZ Barbell Curl", a: "البايسبس (الحجم)", v: "3 × 10", d: "أفضل تمرين لزيادة حجم عضلات الذراع الأمامية.", i: "ثبت كوعك بجانبك تماماً ولا تستخدم المرجحة."},
-                {n: "Triceps Pushdown", a: "الترايسبس (الرأس الجانبي)", v: "3 × 12", d: "يعطي عرض وضخامة للذراع من الجانب.", i: "افرد ذراعك للآخر واعتصر التراي في الأسفل."},
-                {n: "Hammer Curls", a: "البايسبس والساعد (Brachialis)", v: "3 × 12", d: "يزيد من سماكة الذراع وعرضها عند النظر من الجانب.", i: "امسك الدمبل كأنك تمسك مطرقة."},
-                {n: "Skull Crushers", a: "الترايسبس (الرأس الطويل)", v: "3 × 10", d: "يستهدف أكبر رأس في التراي لزيادة حجم الذراع.", i: "انزل بالبار باتجاه جبهتك ببطء وتحكم."}
+                {n: "Barbell Curl", a: "باي حجم", v: "3 × 10", d: "ضخامة الباي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Curl.gif", i: "كوعك بجانبك."},
+                {n: "Pushdown", a: "تراي تحديد", v: "3 × 12", d: "الرأس الخارجي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/04/Pushdown.gif", i: "افرد للآخر."},
+                {n: "Hammer Curl", a: "سماكة", v: "3 × 12", d: "الساعد والباي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Hammer-Curl.gif", i: "مسكة المطرقة."},
+                {n: "Skull Crusher", a: "تراي ضخامة", v: "3 × 10", d: "الرأس الطويل.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Barbell-Skullcrusher.gif", i: "تحكم فوق الرأس."},
+                {n: "Concentration", a: "باي تدوير", v: "3 × 12", d: "قمة الباي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif", i: "عزل تام."},
+                {n: "Dips", a: "تراي وزن جسم", v: "3 × Max", d: "تمرين إنهاء جبار.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Weighted-Bench-Dip.gif", i: "صدرك للأعلى."},
+                {n: "Preacher Curl", a: "باي عزل", v: "3 × 12", d: "منع الغش.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Preacher-Curl.gif", i: "مدى كامل."},
+                {n: "Cable Curl", a: "ضخ دم", v: "3 × 15", d: "توتر مستمر.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Bicep-Curl.gif", i: "اعتصر في النهاية."}
+            ],
+            abs: [
+                {n: "Crunches", a: "علوي", v: "3 × 20", d: "أساس البطن.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Crunch.gif", i: "ارفع كتفك فقط."},
+                {n: "Leg Raise", a: "سفلي", v: "3 × 15", d: "أسفل البطن.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Raise.gif", i: "لا تلمس الأرض."},
+                {n: "Plank", a: "ثبات", v: "3 × 1m", d: "تقوية الـ Core.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif", i: "جسمك مستقيم."},
+                {n: "Russian Twist", a: "جوانب", v: "3 × 20", d: "تحديد الخواصر.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Russian-Twist.gif", i: "المس الأرض."},
+                {n: "Bicycle", a: "شامل", v: "3 × 20", d: "تنسيق كامل.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Bicycle-Crunch.gif", i: "كوع للركبة."},
+                {n: "Climbers", a: "حرق", v: "3 × 30s", d: "رفع نبض القلب.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Mountain-Climber.gif", i: "سرعة ثابتة."},
+                {n: "Hanging Legs", a: "سفلي قوي", v: "3 × 10", d: "تمرين احترافي.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Hanging-Leg-Raise.gif", i: "بدون تأرجح."},
+                {n: "Ab Wheel", a: "قوة قصوى", v: "3 × 10", d: "تمرين جبار.", g: "https://fitnessprogramer.com/wp-content/uploads/2021/02/Wheel-Rollout.gif", i: "تحكم في الرجوع."}
             ]
         }
     };
 
-    let timerId;
-    let tRem = 60;
-    let isRunning = false;
+    let timerId, tRem = 60, isRunning = false;
 
     function buildProgram() {
-        const p = document.getElementById('place').value;
-        const g = document.getElementById('goal').value;
-        const m = document.getElementById('muscle').value;
-
-        let workout = (trainingLibrary[p] && trainingLibrary[p][m]) ? trainingLibrary[p][m] : trainingLibrary.gym[m];
+        const goal = document.getElementById('goal').value;
+        const muscle = document.getElementById('muscle').value;
+        const workout = trainingLibrary.gym[muscle];
         
+        if(!workout) return;
+
         document.getElementById('timerHub').style.display = 'block';
         const container = document.getElementById('workoutContainer');
         container.innerHTML = workout.map((ex, idx) => `
@@ -168,26 +162,22 @@
                     <span class="ex-name">${ex.n}</span>
                     <span class="angle-tag">${ex.a}</span>
                 </div>
+                <img src="${ex.g}" class="ex-gif" loading="lazy">
                 <div class="ex-meta">
-                    <span>⚡ الشدة: ${g === 'cut' ? '4 × 20' : ex.v}</span>
-                    <span>⏱️ راحة: ${g === 'cut' ? '45ث' : '90ث'}</span>
+                    <span>⚡ الشدة: ${goal === 'cut' ? '4 × 20' : ex.v}</span>
+                    <span>⏱️ راحة: ${goal === 'cut' ? '45ث' : '90ث'}</span>
                 </div>
                 <p class="ex-desc">${ex.d}</p>
-                <div class="pro-instruction">
-                    <b>PRO TIP:</b> ${ex.i}
-                </div>
+                <div class="pro-instruction"><b>PRO TIP:</b> ${ex.i}</div>
             </div>
         `).join('');
         
-        window.scrollTo({ top: 450, behavior: 'smooth' });
+        window.scrollTo({ top: 400, behavior: 'smooth' });
     }
 
     function setRest(s) {
-        clearInterval(timerId);
-        tRem = s;
-        isRunning = false;
+        clearInterval(timerId); tRem = s; isRunning = false;
         document.getElementById('timerCtrl').innerText = "ابدأ";
-        document.getElementById('timerCtrl').style.background = "var(--s)";
         document.querySelectorAll('.btn-t').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
         updateTUI();
@@ -197,29 +187,22 @@
         if(isRunning) {
             clearInterval(timerId);
             document.getElementById('timerCtrl').innerText = "استئناف";
-            document.getElementById('timerCtrl').style.background = "var(--s)";
         } else {
             timerId = setInterval(() => {
-                tRem--;
-                updateTUI();
-                if(tRem <= 0) {
-                    clearInterval(timerId);
-                    alert("انتهى وقت الراحة! الجولة القادمة الآن 💪");
-                    resetT();
-                }
+                tRem--; updateTUI();
+                if(tRem <= 0) { clearInterval(timerId); alert("انتهى وقت الراحة!"); resetT(); }
             }, 1000);
             document.getElementById('timerCtrl').innerText = "إيقاف";
-            document.getElementById('timerCtrl').style.background = "var(--d)";
         }
         isRunning = !isRunning;
     }
 
     function resetT() { tRem = 60; updateTUI(); isRunning = false; document.getElementById('timerCtrl').innerText = "ابدأ"; clearInterval(timerId); }
     function updateTUI() {
-        let m = Math.floor(tRem/60);
-        let s = tRem%60;
+        let m = Math.floor(tRem/60), s = tRem%60;
         document.getElementById('timerVal').innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
     }
 </script>
 </body>
 </html>
+
