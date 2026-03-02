@@ -1,6 +1,116 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+   
+   <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* تحسينات بصرية لشاشة القفل */
+        #lockScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #030712; z-index: 10000; display: flex; 
+            align-items: center; justify-content: center; 
+            font-family: 'Cairo', sans-serif;
+        }
+        .lock-card {
+            background: #111827; padding: 40px 30px; border-radius: 30px; 
+            border: 1px solid rgba(139, 92, 246, 0.3); width: 90%; max-width: 400px; 
+            text-align: center; box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+        .lock-card h2 {
+            color: #8b5cf6; font-weight: 900; margin-bottom: 15px; font-size: 24px;
+        }
+        .lock-card p {
+            color: #94a3b8; font-size: 15px; margin-bottom: 25px; line-height: 1.6;
+        }
+        #couponInput {
+            width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #1f2937; 
+            background: #000; color: #fff; text-align: center; font-size: 18px; 
+            margin-bottom: 20px; outline: none; transition: 0.3s; font-weight: bold;
+        }
+        #couponInput:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
+        
+        .active-btn {
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); 
+            color: #fff; border: none; border-radius: 15px; font-weight: 900; 
+            cursor: pointer; font-size: 17px; transition: 0.3s;
+        }
+        .active-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4); }
+        
+        .telegram-link { margin-top: 25px; font-size: 13px; color: #64748b; }
+        .telegram-link a { color: #8b5cf6; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="lockScreen">
+    <div class="lock-card">
+        <h2>Calzy Train Pro 💎</h2>
+        <p>هذا المحتوى مخصص للمشتركين فقط.<br>يرجى إدخال كود التفعيل للوصول للتمارين.</p>
+        
+        <input type="text" id="couponInput" placeholder="ادخل الكود هنا">
+        
+        <button class="active-btn" onclick="checkAccess()">تفعيل الاشتراك 🚀</button>
+        
+        <div class="https://wa.me/201207982437">
+            ليس لديك كود؟ <a href="https://t.me/YourBotLink">تواصل مع الإدارة عبر واتساب</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const validKeys = {
+    "CZ-1M-X92B": 30, "CZ-1M-L44P": 30, "CZ-1M-K11Z": 30, "CZ-1M-Q88W": 30, "CZ-1M-R55T": 30,
+    "CZ-1M-M22N": 30, "CZ-1M-B33V": 30, "CZ-1M-C99X": 30, "CZ-1M-P00L": 30, "CZ-1M-S77D": 30,
+    "CZ-3M-A11B": 90, "CZ-3M-C22D": 90, "CZ-3M-E33F": 90, "CZ-3M-G44H": 90, "CZ-3M-I55J": 90,
+    "CZ-3M-K66L": 90, "CZ-3M-M77N": 90, "CZ-3M-O88P": 90, "CZ-3M-Q99R": 90, "CZ-3M-S00T": 90,
+    "CZ-3M-U11V": 90, "CZ-3M-W22X": 90, "CZ-3M-Y33Z": 90, "CZ-3M-B44N": 90, "CZ-3M-M55K": 90,
+    "CZ-3M-L66P": 90, "CZ-3M-D77S": 90, "CZ-3M-F88G": 90, "CZ-3M-H99J": 90, "CZ-3M-R00Q": 90,
+    "CZ-6M-V11W": 180, "CZ-6M-X22Y": 180, "CZ-6M-Z33A": 180, "CZ-6M-B44C": 180, "CZ-6M-D55E": 180,
+    "CZ-6M-F66G": 180, "CZ-6M-H77I": 180, "CZ-6M-J88K": 180, "CZ-6M-L99M": 180, "CZ-6M-N00O": 180,
+    "CZ-1Y-GOLD1": 365, "CZ-1Y-GOLD2": 365, "CZ-1Y-GOLD3": 365, "CZ-1Y-GOLD4": 365, "CZ-1Y-GOLD5": 365,
+    "CZ-1Y-GOLD6": 365, "CZ-1Y-GOLD7": 365, "CZ-1Y-GOLD8": 365, "CZ-1Y-GOLD9": 365, "CZ-1Y-GOLD10": 365
+};
+
+function checkAccess() {
+    const input = document.getElementById('couponInput').value.trim();
+    const today = new Date();
+
+    if (validKeys[input]) {
+        const durationDays = validKeys[input];
+        const expiryDate = new Date();
+        expiryDate.setDate(today.getDate() + durationDays);
+
+        localStorage.setItem('calzy_expiry', expiryDate.toISOString());
+        localStorage.setItem('calzy_premium_key', input);
+
+        alert("🎉 تم التفعيل بنجاح!\nاشتراكك ينتهي في: " + expiryDate.toLocaleDateString('ar-EG'));
+        document.getElementById('lockScreen').style.display = 'none';
+    } else {
+        alert("الكود غير صحيح! تأكد من كتابته بشكل سليم ❌");
+    }
+}
+
+window.onload = function() {
+    const savedExpiry = localStorage.getItem('calzy_expiry');
+    if (savedExpiry) {
+        if (new Date(savedExpiry) > new Date()) {
+            document.getElementById('lockScreen').style.display = 'none';
+        }
+    }
+}
+</script>
+
+</body>
+</html>
+
+   
+ 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calzy Train Pro | الموسوعة الكاملة</title>
@@ -205,4 +315,3 @@
 </script>
 </body>
 </html>
-
