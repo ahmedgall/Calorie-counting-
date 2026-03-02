@@ -255,18 +255,157 @@
             <div class="prog-bg"><div id="wBar" class="prog-fill" style="background:var(--w)"></div></div>
         </div>
 
-        <div class="glass-card">
-            <div style="display:flex; justify-content:space-between; align-items:center">
-                <span><svg style="width:16px; height:16px; display:inline; vertical-align:middle; color:var(--cr)" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path></svg> كرياتين <small id="crTxt" style="color:var(--cr)">0/5 g</small></span>
-                <button class="btn-add" style="background:var(--cr)" onclick="addTrack('creatine', 5)">+ 5 جرام</button>
+     
+     <div class="premium-glass-card">
+    <div class="card-head">
+        <div class="brand">
+            <div class="pill-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg>
             </div>
-            <div class="prog-bg"><div id="crBar" class="prog-fill" style="background:var(--cr)"></div></div>
+            <div class="titles">
+                <h3 style="margin:0; font-size:16px; color:#fff;">المكملات</h3>
+                <span style="font-size:11px; color:#64748b;">النظام اليومي</span>
+            </div>
         </div>
+        <button class="add-circle" onclick="toggleInputArea()" id="btnPlus">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
 
-        <div class="glass-card">
-            <h4 style="margin-bottom:10px; display:flex; align-items:center; gap:8px;"><svg style="width:18px; height:18px; color:var(--p)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19.423 15.641a7 7 0 11-14.846 0 7 7 0 0114.846 0z"></path><path d="M12 8v4l3 3"></path></svg> الفيتامينات</h4>
-            <div id="vitList"></div>
+    <div id="inputBox" class="input-container" style="display: none;">
+        <input type="text" id="suppIn" placeholder="أضف مكمل جديد...">
+        <button onclick="addNewItem()">حفظ</button>
+    </div>
+
+    <div id="suppList" class="list-wrapper">
         </div>
+</div>
+
+<style>
+    /* التنسيق الاحترافي */
+    .premium-glass-card {
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 25px;
+        padding: 20px;
+        max-width: 380px;
+        margin: 20px auto;
+        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .pill-icon { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); padding: 8px; border-radius: 12px; }
+
+    .add-circle {
+        background: #fff; border: none; width: 32px; height: 32px; border-radius: 50%;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: 0.3s ease;
+    }
+    .add-circle.rotate { transform: rotate(45deg); background: #ef4444; }
+    .add-circle.rotate svg { stroke: #fff; }
+
+    .input-container { display: flex; gap: 8px; margin-bottom: 15px; animation: fadeIn 0.3s; }
+    .input-container input {
+        flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 15px; border-radius: 12px; color: #fff; outline: none; font-size: 14px;
+    }
+    .input-container button {
+        background: #8b5cf6; color: #fff; border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; font-weight: 700;
+    }
+
+    .list-wrapper { display: flex; flex-direction: column; gap: 10px; }
+
+    .supp-row {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px; border-radius: 18px; display: flex; align-items: center;
+        border: 1px solid transparent; transition: 0.3s;
+    }
+    .supp-row.active { border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.05); }
+
+    .check-circle {
+        width: 20px; height: 20px; border: 1.5px solid #4b5563; border-radius: 50%;
+        cursor: pointer; margin-left: 12px; position: relative; transition: 0.3s;
+    }
+    .supp-row.active .check-circle { background: #10b981; border-color: #10b981; }
+
+    .row-text { flex: 1; color: #e5e7eb; font-weight: 600; font-size: 14px; text-align: right; }
+    .supp-row.active .row-text { color: #64748b; text-decoration: line-through; }
+
+    .trash-btn { background: none; border: none; color: #4b5563; cursor: pointer; padding: 5px; transition: 0.3s; }
+    .trash-btn:hover { color: #ef4444; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    // نظام البرمجة الفعلي والمستقل
+    let savedSupps = JSON.parse(localStorage.getItem('calzy_v3_data')) || [
+        { name: "كرياتين مونوهيدرات", done: false },
+        { name: "فيتامين د3", done: false }
+    ];
+
+    function renderSupps() {
+        const listDiv = document.getElementById('suppList');
+        if(!listDiv) return;
+        
+        listDiv.innerHTML = savedSupps.map((item, index) => `
+            <div class="supp-row ${item.done ? 'active' : ''}">
+                <div class="check-circle" onclick="toggleItem(${index})"></div>
+                <span class="row-text">${item.name}</span>
+                <button class="trash-btn" onclick="deleteItem(${index})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        `).join('');
+        
+        localStorage.setItem('calzy_v3_data', JSON.stringify(savedSupps));
+    }
+
+    function toggleInputArea() {
+        const box = document.getElementById('inputBox');
+        const btn = document.getElementById('btnPlus');
+        if(box.style.display === 'none') {
+            box.style.display = 'flex';
+            btn.classList.add('rotate');
+        } else {
+            box.style.display = 'none';
+            btn.classList.remove('rotate');
+        }
+    }
+
+    function addNewItem() {
+        const input = document.getElementById('suppIn');
+        const val = input.value.trim();
+        if (val !== "") {
+            savedSupps.push({ name: val, done: false });
+            input.value = '';
+            toggleInputArea();
+            renderSupps();
+        }
+    }
+
+    function toggleItem(index) {
+        savedSupps[index].done = !savedSupps[index].done;
+        renderSupps();
+    }
+
+    function deleteItem(index) {
+        savedSupps.splice(index, 1);
+        renderSupps();
+    }
+
+    // التأكد من التشغيل عند تحميل الصفحة
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        renderSupps();
+    } else {
+        document.addEventListener("DOMContentLoaded", renderSupps);
+    }
+</script>
+
         
         <footer style="text-align: center; padding: 20px; color: #555;">
     <p>&copy; 2026 VEXA Systems. جميع الحقوق محفوظة.</p>
@@ -1020,153 +1159,4 @@ window.addEventListener('load', function() {
         }
         
         // إرسال الإشعار لتليجرام
-        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
-        const CHAT_ID = "6387342853";
-        const message = `👋 عودة مستخدم للموقع:\n👤 الاسم: ${userName}\n📱 الحالة: متواجد الآن\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
-        
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: message
-            })
-        }).catch(err => console.log("Notification delay"));
-    }
-});
-
-    
-</script>
-
-<script>
-    
-// كود إرسال تقرير الزوار اليومي
-function sendDailyReport() {
-    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
-    const CHAT_ID = "6387342853";
-    
-    const today = new Date().toLocaleDateString('en-GB'); // تاريخ اليوم
-    const lastReportDate = localStorage.getItem('last_report_date');
-    
-    // 1. تحديث عداد الزيارات الكلي في المتصفح
-    let visitCount = parseInt(localStorage.getItem('daily_visit_count') || "0");
-    visitCount++;
-    localStorage.setItem('daily_visit_count', visitCount);
-
-    // 2. التحقق: هل بدأ يوم جديد لإرسال تقرير اليوم السابق؟
-    if (lastReportDate && lastReportDate !== today) {
-        const yesterdayCount = localStorage.getItem('daily_visit_count') || 0;
-        
-        const reportMessage = `📊 **تقرير كالزي اليومي**\n\n📅 التاريخ: ${lastReportDate}\n👥 عدد الزيارات: ${yesterdayCount}\n🚀 استمر في التطوير يا بطل!`;
-
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: reportMessage,
-                parse_mode: "Markdown"
-            })
-        }).then(() => {
-            // تصفير العداد لليوم الجديد
-            localStorage.setItem('daily_visit_count', "1");
-            localStorage.setItem('last_report_date', today);
-        });
-    } else if (!lastReportDate) {
-        // أول مرة تشغيل للتطبيق
-        localStorage.setItem('last_report_date', today);
-    }
-}
-
-// تشغيل الدالة مع تحميل الصفحة
-window.addEventListener('load', sendDailyReport);
-    
-    
-</script>
-
-
-
-<script>
-    
-    // كود حساب مدة البقاء في الموقع وإرسالها للتليجرام
-let startTime = Date.now(); // تسجيل لحظة الدخول
-
-window.addEventListener('beforeunload', function() {
-    let endTime = Date.now();
-    let timeSpent = (endTime - startTime) / 1000; // حساب الثواني
-    
-    // تحويل الثواني لدقائق وثواني بشكل شيك
-    let minutes = Math.floor(timeSpent / 60);
-    let seconds = Math.floor(timeSpent % 60);
-    let timeString = minutes > 0 ? `${minutes} دقيقة و ${seconds} ثانية` : `${seconds} ثانية`;
-
-    const isRegistered = localStorage.getItem('calzy_phone_registered');
-    const savedData = localStorage.getItem('calzy_vScientist');
-    
-    if (isRegistered === 'true') {
-        let userName = "مستخدم";
-        if (savedData) {
-            userName = JSON.parse(savedData).name || "مستخدم";
-        }
-
-        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
-        const CHAT_ID = "6387342853";
-        const message = `⏱️ تقرير مدة الجلسة:\n👤 المستخدم: ${userName}\n⌛ قعد في الموقع: ${timeString}\n🚪 الحالة: خرج الآن`;
-
-        // بنستخدم navigator.sendBeacon عشان نضمن الرسالة تتبعت حتى لو الصفحة بتتقفل
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
-        navigator.sendBeacon(url);
-    }
-});
-
-    
-</script>
-
-
-<script>
-    
-    // كود إرسال إشعار عند إغلاق الاحتياج اليومي
-function trackGoalCompletion() {
-    const today = new Date().toLocaleDateString('en-GB');
-    const hasSentToday = localStorage.getItem('goal_reached_notified_date');
-
-    // التأكد إن المستخدم خلص الـ Setup وسجل وجبات
-    if (db.setup && db.current.c >= db.goals.c && hasSentToday !== today) {
-        
-        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
-        const CHAT_ID = "6387342853";
-        
-        const message = `🎯 **هدف محقق!**\n\n👤 المستخدم: ${db.name}\n🔥 السعرات: ${db.current.c} / ${db.goals.c}\n💪 الحالة: قفل احتياجه بنجاح\n📅 التاريخ: ${today}`;
-
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: message,
-                parse_mode: "Markdown"
-            })
-        }).then(() => {
-            // تسجيل إنه تم الإرسال النهاردة عشان ميبعتش مع كل إضافة وجبة جديدة
-            localStorage.setItem('goal_reached_notified_date', today);
-        });
-    }
-}
-
-// تعديل بسيط: لازم نشغل الدالة دي كل ما المستخدم يضيف وجبة
-// ضيف السطر ده جوه دالة confirmAdd() في آخرها
-// trackGoalCompletion();
-
-    
-</script>
-
-
-
-
-<div id="ban-overlay" style="
-    display: none; 
-    position: fixed; 
-    inset: 0; 
-    z-index: 10000;
-    background: radial-gradient(circle, #1a0505 0%, #07090c 100%); 
-    back
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7
