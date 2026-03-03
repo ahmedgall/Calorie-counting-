@@ -1162,5 +1162,68 @@ window.addEventListener('load', function() {
             userName = dbData.name || "مستخدم";
         }
         
+
+
+
+<script>
+  
+  // كود إشعار دخول مستخدم قديم (إضافة مستقلة)
+window.addEventListener('load', function() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const savedData = localStorage.getItem('calzy_vScientist');
+    
+    // مش هنبعت غير لو المستخدم مسجل رقمه فعلاً قبل كده
+    if (isRegistered === 'true') {
+        let userName = "مستخدم";
+        let userPhone = "رقم غير مسجل محلياً";
+        
+        // محاولة جلب الاسم من بيانات الـ Setup
+        if (savedData) {
+            const dbData = JSON.parse(savedData);
+            userName = dbData.name || "مستخدم";
+        }
+        
         // إرسال الإشعار لتليجرام
-        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        const message = `👋 عودة مستخدم للموقع:\n👤 الاسم: ${userName}\n📱 الحالة: متواجد الآن\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+        
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message
+            })
+        }).catch(err => console.log("Notification delay"));
+    }
+});
+
+    
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
