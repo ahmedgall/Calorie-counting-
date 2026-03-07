@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calzy Health | النسخة العلمية الدقيقة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #8b5cf6; --s: #10b981; --bg: #05070a; --card: #111827; --text: #f9fafb; --d: #ef4444; --w: #3b82f6; --cr: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; overscroll-behavior-y: contain; }
+        .container { max-width: 450px; margin: 0 auto; padding: 20px; }
+
+        /* Setup Style */
+        .setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        
+        /* Progress Circle */
+        .main-display { position: relative; width: 220px; height: 220px; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        svg.progress-svg { transform: rotate(-90deg); width: 220px; height: 220px; }
+        circle { fill: none; stroke-width: 15; stroke-linecap: round; }
+        .track { stroke: rgba(255,255,255,0.05); }
+        .progress { stroke: var(--p); stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s ease; filter: drop-shadow(0 0 8px var(--p)); }
+        .inner-content { position: absolute; text-align: center; }
+        .inner-content h2 { font-size: 40px; font-weight: 900; line-height: 1; }
+
+        .glass-card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 18px; margin-bottom: 12px; }
+        .macro-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+        .macro-box { text-align: center; background: rgba(255,255,255,0.02); padding: 10px 5px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); }
+        .macro-box b { font-size: 13px; color: var(--s); display: block; }
+        
+        .prog-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .prog-fill { height: 100%; width: 0%; transition: 0.5s ease; }
+
+        .btn-add { border: none; color: white; padding: 6px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        
+        .vit-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .vit-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--p); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .vit-check.active { background: var(--p); }
+
+        input, select { width: 100%; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; }
+        .btn-p { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: var(--p); color: white; cursor: pointer; }
+
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11, 15, 26, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; padding: 15px; border-top: 1px solid #1f2937; z-index: 1000; }
+        .nav-item { color: #4b5563; width: 28px; height: 28px; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--p); }
+        .nav-add { background: var(--p); color: white; width: 45px; height: 45px; border-radius: 15px; padding: 8px; display: flex; justify-content: center; align-items: center; }
+
+        .hidden { display: none; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: flex-end; }
+        .modal-inner { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 25px; }
+    
+        .user-name-style { background: linear-gradient(120deg, #8b5cf6, #d8b4fe, #8b5cf6); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight:  linear infinite; display: inline-block; }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* PWA Banner */
+        #pwa-install-banner { position: fixed; bottom: 85px; left: 20px; right: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px; padding: 12px; z-index: 900; display: none; align-items: center; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .pwa-content { display: flex; align-items: center; gap: 10px; }
+        .pwa-content img { width: 40px; height: 40px; border-radius: 8px; }
+        #pwa-install-btn { background: #000; color: #fff; border: 1px solid var(--p); padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; }
+   
+   .mini-streak-capsule {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(251, 191, 36, 0.05); /* خلفية ذهبية شفافة جداً */
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 4px 12px;
+    border-radius: 50px;
+    color: #fbbf24;
+    font-weight: 900;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.1);
+    transition: 0.3s;
+}
+
+.streak-icon-svg {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.6));
+}
+
+#streakDays {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+/* حركة نبض خفيفة جداً للكبسولة */
+.mini-streak-capsule {
+    animation: gentleGlow 4s infinite;
+}
+
+@keyframes gentleGlow {
+    0%, 100% { border-color: rgba(251, 191, 36, 0.3); box-shadow: 0 0 10px rgba(251, 191, 36, 0.1); }
+    50% { border-color: rgba(251, 191, 36, 0.6); box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
+
+.supp-button {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(17, 24, 39, 0.8) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 24px;
+    padding: 20px;
+    margin: 15px 0;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+/* تأثير التوهج المتحرك خلف الزر */
+.supp-button::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 60%);
+    animation: rotateGlow 6s linear infinite;
+    pointer-events: none;
+}
+
+.supp-icon {
+    width: 55px; height: 55px;
+    background: var(--p);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.4);
+    margin-left: 15px;
+}
+
+.supp-icon svg { width: 30px; height: 30px; }
+
+.supp-content { flex-grow: 1; text-align: right; }
+
+.supp-label {
+    background: #fbbf24;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.supp-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 900;
+    margin: 0;
+}
+
+.supp-desc {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.supp-arrow {
+    width: 30px; height: 30px;
+    color: var(--p);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* التفاعلات عند اللمس */
+.supp-button:active { transform: scale(0.97); border-color: var(--p); }
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+ 
+ 
+   
+    </style>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
+</head>
+
+<body>
+
+
+
+
+
+
+<div id="pwa-install-banner">
+    <div class="pwa-content">
+        <img src="vj.png" alt="Logo">
+        <div><strong style="font-size: 13px; color: #fff; display: block;">تثبيت Calzy OS</strong><small style="color: #94a3b8; font-size: 10px;">لسهولة الاستخدام السريع</small></div>
+    </div>
+    <button id="pwa-install-btn">تثبيت</button>
+</div>
+
+<div id="setupLayer" class="setup-overlay hidden">
+    <h1 style="text-align: center; margin-bottom: 20px; font-weight: 900;">CALZY <span style="color:var(--p)">2026</span></h1>
+    <input type="text" id="setupName" placeholder="الاسم">
+    <select id="setupGender"><option value="male">ذكر</option><option value="female">أنثى</option></select>
+    <div style="display: flex; gap: 10px;"><input type="number" id="setupW" placeholder="الوزن (كجم)"><input type="number" id="setupH" placeholder="الطول (سم)"></div>
+    <input type="number" id="setupA" placeholder="العمر">
+    <select id="setupGoal"><option value="cut">تنشيف (عجز 500)</option><option value="maintain" selected>ثبات</option><option value="bulk">تضخيم (زيادة 300)</option></select>
+    <button class="btn-p" onclick="finishSetup()">حساب السعرات بدقة ✅</button>
+</div>
+
+<div class="container" id="mainApp">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 id="greetUser">مرحباً</h2>
+        
+        <div class="mini-streak-capsule">
+    <div class="streak-icon-svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.6571 18.6571C16.1956 20.1186 14.1956 21 12 21C7.58172 21 4 17.4183 4 13C4 10.1262 5.51448 7.5959 7.79469 6.17382C8.28315 5.86915 8.94611 5.9189 9.3876 6.36039L12 9L15.6124 5.3876C16.0539 4.94611 16.7169 4.89635 17.2053 5.20102C19.4855 6.6231 21 9.15342 21 12C21 14.1956 20.1186 16.1956 18.6571 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 13C15 14.6569 13.6569 16 12 16C10.3431 16 9 14.6569 9 13C9 11.3431 10.3431 10 12 10C13.6569 10 15 11.3431 15 13Z" fill="currentColor"/>
+        </svg>
+    </div>
+    <span id="streakDays">0</span>
+</div>
+
+
+        
+</header>
+
+    <div id="home-page">
+        <div class="main-display">
+            <svg class="progress-svg"><circle class="track" cx="110" cy="110" r="100"></circle><circle id="progCircle" class="progress" cx="110" cy="110" r="100"></circle></svg>
+            <div class="inner-content"><p style="color:#94a3b8; font-size:12px">المتبقي</p><h2 id="calRem">0</h2><small id="calTotal" style="font-size:10px; color:#6b7280"></small></div>
+        </div>
+
+        <div class="macro-row glass-card">
+            <div class="macro-box"><small>بروتين</small><b id="pVal">0/0</b></div>
+            <div class="macro-box"><small>كارب</small><b id="cbVal">0/0</b></div>
+            <div class="macro-box"><small>دهون</small><b id="fVal">0/0</b></div>
+        </div>
+
+
+
+
+
+        <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <span><svg style="width:16px; height:16px; display:inline; vertical-align:middle; color:var(--w)" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1.323l.395.072 4 4 .707.707a1 1 0 01-1.414 1.414L14 9.828V15a2 2 0 01-2 2H8a2 2 0 01-2-2V9.828l-.707.707a1 1 0 01-1.414-1.414l4.707-4.707V3a1 1 0 011-1z"></path></svg> الماء <small id="wTxt" style="color:var(--w)">0/3 L</small></span>
+                <button class="btn-add" style="background:var(--w)" onclick="addTrack('water', 0.25)">+ ربع لتر</button>
+            </div>
+            <div class="prog-bg"><div id="wBar" class="prog-fill" style="background:var(--w)"></div></div>
+        </div>
+
+     
+     <div class="premium-glass-card">
+    <div class="card-head">
+        <div class="brand">
+            <div class="pill-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg>
+            </div>
+            <div class="titles">
+                <h3 style="margin:0; font-size:16px; color:#fff;">المكملات</h3>
+                <span style="font-size:11px; color:#64748b;">النظام اليومي</span>
+            </div>
+        </div>
+        <button class="add-circle" onclick="toggleInputArea()" id="btnPlus">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
+
+    <div id="inputBox" class="input-container" style="display: none;">
+        <input type="text" id="suppIn" placeholder="أضف مكمل جديد...">
+        <button onclick="addNewItem()">حفظ</button>
+    </div>
+
+    <div id="suppList" class="list-wrapper">
+        </div>
+</div>
+
+<style>
+    /* التنسيق الاحترافي */
+    .premium-glass-card {
+        background: rgba(17, 24, 39, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 25px;
+        padding: 20px;
+        max-width: 380px;
+        margin: 20px auto;
+        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .pill-icon { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); padding: 8px; border-radius: 12px; }
+
+    .add-circle {
+        background: #fff; border: none; width: 32px; height: 32px; border-radius: 50%;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: 0.3s ease;
+    }
+    .add-circle.rotate { transform: rotate(45deg); background: #ef4444; }
+    .add-circle.rotate svg { stroke: #fff; }
+
+    .input-container { display: flex; gap: 8px; margin-bottom: 15px; animation: fadeIn 0.3s; }
+    .input-container input {
+        flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 15px; border-radius: 12px; color: #fff; outline: none; font-size: 14px;
+    }
+    .input-container button {
+        background: #8b5cf6; color: #fff; border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; font-weight: 700;
+    }
+
+    .list-wrapper { display: flex; flex-direction: column; gap: 10px; }
+
+    .supp-row {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px; border-radius: 18px; display: flex; align-items: center;
+        border: 1px solid transparent; transition: 0.3s;
+    }
+    .supp-row.active { border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.05); }
+
+    .check-circle {
+        width: 20px; height: 20px; border: 1.5px solid #4b5563; border-radius: 50%;
+        cursor: pointer; margin-left: 12px; position: relative; transition: 0.3s;
+    }
+    .supp-row.active .check-circle { background: #10b981; border-color: #10b981; }
+
+    .row-text { flex: 1; color: #e5e7eb; font-weight: 600; font-size: 14px; text-align: right; }
+    .supp-row.active .row-text { color: #64748b; text-decoration: line-through; }
+
+    .trash-btn { background: none; border: none; color: #4b5563; cursor: pointer; padding: 5px; transition: 0.3s; }
+    .trash-btn:hover { color: #ef4444; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    // نظام البرمجة الفعلي والمستقل
+    let savedSupps = JSON.parse(localStorage.getItem('calzy_v3_data')) || [
+        { name: "كرياتين مونوهيدرات", done: false },
+        { name: "فيتامين د3", done: false }
+    ];
+
+    function renderSupps() {
+        const listDiv = document.getElementById('suppList');
+        if(!listDiv) return;
+        
+        listDiv.innerHTML = savedSupps.map((item, index) => `
+            <div class="supp-row ${item.done ? 'active' : ''}">
+                <div class="check-circle" onclick="toggleItem(${index})"></div>
+                <span class="row-text">${item.name}</span>
+                <button class="trash-btn" onclick="deleteItem(${index})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        `).join('');
+        
+        localStorage.setItem('calzy_v3_data', JSON.stringify(savedSupps));
+    }
+
+    function toggleInputArea() {
+        const box = document.getElementById('inputBox');
+        const btn = document.getElementById('btnPlus');
+        if(box.style.display === 'none') {
+            box.style.display = 'flex';
+            btn.classList.add('rotate');
+        } else {
+            box.style.display = 'none';
+            btn.classList.remove('rotate');
+        }
+    }
+
+    function addNewItem() {
+        const input = document.getElementById('suppIn');
+        const val = input.value.trim();
+        if (val !== "") {
+            savedSupps.push({ name: val, done: false });
+            input.value = '';
+            toggleInputArea();
+            renderSupps();
+        }
+    }
+
+    function toggleItem(index) {
+        savedSupps[index].done = !savedSupps[index].done;
+        renderSupps();
+    }
+
+    function deleteItem(index) {
+        savedSupps.splice(index, 1);
+        renderSupps();
+    }
+
+    // التأكد من التشغيل عند تحميل الصفحة
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        renderSupps();
+    } else {
+        document.addEventListener("DOMContentLoaded", renderSupps);
+    }
+</script>
+
+        
+        <footer style="text-align: center; padding: 20px; color: #555;">
+    <p>&copy; 2026 VEXA Systems. جميع الحقوق محفوظة.</p>
+    <a href="privacy.html" style="color: #8b5cf6; text-decoration: none; font-size: 12px;">سياسة الخصوصية</a>
+</footer>
+
+        
+        
+    </div>
+
+    <div id="services-page" class="hidden">
+        <h3 style="margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+            <svg style="width:24px; height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            الخدمات المتقدمة
+        </h3>
+        <a href="exercises.html" style="text-decoration:none; color:inherit">
+            <div class="glass-card" style="display:flex; align-items:center; gap:15px">
+                <div style="width:40px; height:40px; color:var(--p)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                <div><b>تمارين مخصصة</b><br><small style="color:#94a3b8">جدول تمارينك العلمي</small></div>
+            </div>
+        </a>
+    
+   <a href="girls.html" style="text-decoration:none; color:inherit">
+            <div class="glass-card" style="display:flex; align-items:center; gap:15px">
+                <div style="width:40px; height:40px; color:var(--p)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                <div><b>تمارين نساء </b><br><small style="color:#94a3b8">جدول  تمارين مخصص للنساء</small></div>
+            </div>
+        </a>
+    
+     <a href="Services.html" style="text-decoration:none; color:inherit">
+            <div class="glass-card" style="display:flex; align-items:center; gap:15px">
+                <div style="width:40px; height:40px; color:var(--p)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                <div><b>خدمات اخرى </b><br><small style="color:#94a3b8">  العديد من الخدمات  </small></div>
+            </div>
+        </a>
+    
+    
+   <a href="sen.html" style="text-decoration:none; color:inherit">
+            <div class="glass-card" style="display:flex; align-items:center; gap:15px">
+                <div style="width:40px; height:40px; color:var(--p)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                <div><b> متابعه تتطور الجسم </b><br><small style="color:#94a3b8">    تابع تتطور جسمك كل اسبوع</small></div>
+            </div>
+        </a>
+    
+    <a href="30.html" style="text-decoration: none;">
+    <div class="challenge-card">
+        <div class="challenge-info">
+            <div class="challenge-icon">🏆</div>
+            <div>
+                <span class="challenge-label">متاح الآن</span>
+                <h3 class="challenge-title">تحدي الـ 30 يوم</h3>
+                <p class="challenge-desc">صندوق واحد كل 24 ساعة.. هل ستقبل التحدي؟</p>
+            </div>
+        </div>
+        <div class="challenge-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M9 18l6-6-6-6"></path>
+            </svg>
+        </div>
+  
+</a>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<a href="https://t.me/calzy_os" target="_blank" class="tg-capsule">
+    <div class="tg-inner">
+        <svg class="tg-svg" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .33z"/>
+        </svg>
+        <span class="tg-label">مجتمعنا</span>
+    </div>
+</a>
+
+<a href="score.html" style="text-decoration: none;">
+    <div class="rank-link-card">
+        <div class="rank-link-content">
+            <div class="rank-link-icon" id="miniBadge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            </div>
+            <div class="rank-link-text">
+                <span class="rank-mini-label">المستوى الحالي</span>
+                <h4 class="rank-display-name" id="userRankDisplay">جاري التحميل...</h4>
+            </div>
+        </div>
+        <div class="rank-link-arrow">
+            <span>تفاصيل الرتبة</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </div>
+    </div>
+
+
+
+
+<a href="pep.html" style="text-decoration: none;">
+    <div class="rank-link-card">
+        <div class="rank-link-content">
+            <div></path>
+                </svg>
+            </div>
+            <div class="rank-link-text">
+                <span class="rank-mini-label"> </span>
+                <h4 class="rank-display-name" id="userRankDisplay">قائمه المتصدرين</h4>
+            </div>
+        </div>
+        <div class="rank-link-arrow">
+            <span>روئيه المتصدرين</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </div>
+    </div>
+
+
+
+
+<a href="tet.html" style="text-decoration: none;">
+    <div class="glass-card" style="display: flex; align-items: center; gap: 15px; border-right: 4px solid var(--p); transition: 0.3s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.05)'" onmouseout="this.style.background='var(--card)'">
+        
+        <div style="width: 45px; height: 45px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--p); flex-shrink: 0;">
+           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M4 21V19.5C4 16.4624 6.46243 14 9.5 14H12.5C15.5376 14 18 16.4624 18 19.5V21M7 21V18M15 21V18M16.5 6L16.8367 5.49493C17.1969 4.95461 17.9371 4.82782 18.4566 5.21745C19.0073 5.63047 19.0645 6.43549 18.5778 6.92224L17.8536 7.64645C17.6272 7.87282 17.5 8.17986 17.5 8.5M17.5 10V10.2M13.8281 4.89801C14.6435 3.74945 15.9842 3 17.5 3C19.9853 3 22 5.01472 22 7.5C22 9.98528 19.9853 12 17.5 12C16.2549 12 15.1279 11.4943 14.3131 10.6771M15 8.00001C15 5.79086 13.2091 4 11 4C8.79086 4 7 5.79086 7 8.00001C7 10.2092 8.79086 12 11 12C11.8312 12 12.6032 11.7465 13.2429 11.3125C14.3033 10.5931 15 9.37794 15 8.00001Z" stroke="#8b5cf6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></g></svg>
+        </div>
+        
+        <div style="flex-grow: 1;">
+            <b style="color: white; font-size: 16px; display: block;">موسوعة المكملات</b>
+            <small style="color: #94a3b8; font-size: 12px;">دليلك العلمي للمكملات الغذائية</small>
+        </div>
+
+        <div style="color: var(--p); font-weight: bold; font-size: 18px; padding-left: 5px;">←</div>
+    </div>
+</a>
+
+
+
+<a href="es.html" style="text-decoration: none;">
+    <div class="glass-card" style="display: flex; align-items: center; gap: 15px; border-right: 4px solid var(--p); transition: 0.3s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.05)'" onmouseout="this.style.background='var(--card)'">
+        
+        <div style="width: 45px; height: 45px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--p); flex-shrink: 0;">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M4 21V19.5C4 16.4624 6.46243 14 9.5 14H12.5C15.5376 14 18 16.4624 18 19.5V21M7 21V18M15 21V18M16.5 6L16.8367 5.49493C17.1969 4.95461 17.9371 4.82782 18.4566 5.21745C19.0073 5.63047 19.0645 6.43549 18.5778 6.92224L17.8536 7.64645C17.6272 7.87282 17.5 8.17986 17.5 8.5M17.5 10V10.2M13.8281 4.89801C14.6435 3.74945 15.9842 3 17.5 3C19.9853 3 22 5.01472 22 7.5C22 9.98528 19.9853 12 17.5 12C16.2549 12 15.1279 11.4943 14.3131 10.6771M15 8.00001C15 5.79086 13.2091 4 11 4C8.79086 4 7 5.79086 7 8.00001C7 10.2092 8.79086 12 11 12C11.8312 12 12.6032 11.7465 13.2429 11.3125C14.3033 10.5931 15 9.37794 15 8.00001Z" stroke="#8b5cf6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></g></svg>
+        </div>
+        
+        <div style="flex-grow: 1;">
+            <b style="color: white; font-size: 16px; display: block;"> 50 خرافه عن الجيم</b>
+            <small style="color: #94a3b8; font-size: 12px;"> اكثر 50خرافه  في عالم كمال اللجسام</small>
+        </div>
+
+        <div style="color: var(--p); font-weight: bold; font-size: 18px; padding-left: 5px;">←</div>
+    </div>
+</a>
+
+
+
+
+
+
+
+
+<a href="muo.html" style="text-decoration: none;">
+    <div class="glass-card" style="display: flex; align-items: center; gap: 15px; border-right: 4px solid var(--p); transition: 0.3s;" onmouseover="this.style.background='rgba(139, 92, 246, 0.05)'" onmouseout="this.style.background='var(--card)'">
+        
+        <div style="width: 45px; height: 45px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--p); flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M4 21V19.5C4 16.4624 6.46243 14 9.5 14H12.5C15.5376 14 18 16.4624 18 19.5V21M7 21V18M15 21V18M16.5 6L16.8367 5.49493C17.1969 4.95461 17.9371 4.82782 18.4566 5.21745C19.0073 5.63047 19.0645 6.43549 18.5778 6.92224L17.8536 7.64645C17.6272 7.87282 17.5 8.17986 17.5 8.5M17.5 10V10.2M13.8281 4.89801C14.6435 3.74945 15.9842 3 17.5 3C19.9853 3 22 5.01472 22 7.5C22 9.98528 19.9853 12 17.5 12C16.2549 12 15.1279 11.4943 14.3131 10.6771M15 8.00001C15 5.79086 13.2091 4 11 4C8.79086 4 7 5.79086 7 8.00001C7 10.2092 8.79086 12 11 12C11.8312 12 12.6032 11.7465 13.2429 11.3125C14.3033 10.5931 15 9.37794 15 8.00001Z" stroke="#8b5cf6" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></g></svg> </path>
+                <line x1="9" y1="12" x2="15" y2="12"></line>
+            </svg>
+        </div>
+        
+        <div style="flex-grow: 1;">
+            <b style="color: white; font-size: 16px; display: block;">موسوعة مصادر الماكروز</b>
+            <small style="color: #94a3b8; font-size: 12px;"> دليلك للعناصر الغذائيه  </small>
+        </div>
+
+        <div style="color: var(--p); font-weight: bold; font-size: 18px; padding-left: 5px;">←</div>
+    </div>
+</a>
+
+
+
+
+</a>
+<div class="glass-card reset-btn-container" 
+     onclick="if(confirm('⚠️ هل أنت متأكد؟\nسيتم مسح الاسم، الوزن، وكل السجلات نهائياً والبدء من جديد.')){ localStorage.clear(); location.reload(); }" 
+     style="cursor: pointer; border: 1px solid rgba(239, 68, 68, 0.3); padding: 18px; border-radius: 22px; background: rgba(239, 68, 68, 0.08); margin: 15px 0; transition: transform 0.2s active;">
+    
+    <div style="display:flex; align-items:center; gap:15px; direction: rtl;">
+        <div style="width:45px; height:45px; background: rgba(239, 68, 68, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ef4444;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </div>
+        
+        <div style="text-align: right;">
+            <b style="color:#ef4444; font-size: 16px; display: block;">إعادة ضبط المصنع</b>
+            <small style="color:#94a3b8; font-size: 11px;">سيقوم هذا بحذف بروفايلك تماماً</small>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="me.html" class="btn-me">
+        تعرف على مطور الموقع وشركة VEXA
+    </a>
+</div>
+
+<style>
+    .btn-me {
+        display: inline-block;
+        padding: 12px 25px;
+        background: linear-gradient(45deg, #00d1b2, #009e86);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 209, 178, 0.3);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-me:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 209, 178, 0.5);
+        background: linear-gradient(45deg, #009e86, #00d1b2);
+    }
+</style>
+
+
+
+<style>
+    /* تأثير بسيط عند الضغط باللمس */
+    .reset-btn-container:active {
+        transform: scale(0.96);
+        background: rgba(239, 68, 68, 0.15) !important;
+    }
+</style>
+
+
+<style>
+.rank-link-card {
+    background: linear-gradient(90deg, #111827 0%, #1e1b4b 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.rank-link-card:active { transform: scale(0.97); }
+
+.rank-link-content { display: flex; align-items: center; gap: 15px; }
+
+.rank-link-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.rank-mini-label { font-size: 10px; color: #94a3b8; font-weight: bold; display: block; }
+.rank-display-name { color: white; font-size: 16px; font-weight: 900; margin-top: 2px; }
+
+.rank-link-arrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8b5cf6;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* حركة نبض خفيفة للأيقونة */
+@keyframes miniPulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+.rank-link-icon { animation: miniPulse 2s infinite; }
+</style>
+
+<script>
+// كود صغير لتحديث اسم الرتبة فوراً في الزر
+function updateHomeRank() {
+    const challengeData = JSON.parse(localStorage.getItem('calzy_challenges')) || { doneDays: [] };
+    const totalDone = challengeData.doneDays.length;
+    const currentLevel = Math.floor(totalDone / 30);
+    const rankNames = ["مبتدئ طموح", "وحش كاسر", "أسطورة الصالة"];
+    
+    document.getElementById('userRankDisplay').innerText = rankNames[Math.min(currentLevel, 2)];
+}
+// تشغيل التحديث عند فتح الصفحة الرئيسية
+updateHomeRank();
+</script>
+
+
+
+<style>
+.tg-capsule {
+    position: fixed;
+    bottom: 100px; /* فوق المنيو بمسافة كافية */
+    left: 15px;
+    z-index: 99999;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent; /* يمنع الوميض عند اللمس في الأندرويد */
+}
+
+.tg-inner {
+    display: flex;
+    align-items: center;
+    background: #111827; /* لون داكن */
+    border: 2px solid #8b5cf6; /* إطار بنفسجي */
+    padding: 6px 12px 6px 6px;
+    border-radius: 50px; /* شكل كبسولة */
+    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+    transition: transform 0.2s active;
+}
+
+/* حركة النبض الهادئة للكبسولة كلها */
+@keyframes capsule-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.tg-capsule {
+    animation: capsule-pulse 2s infinite ease-in-out;
+}
+
+.tg-svg {
+    width: 35px;
+    height: 35px;
+    background: #8b5cf6;
+    color: white;
+    border-radius: 50%;
+    padding: 6px;
+}
+
+.tg-label {
+    color: white;
+    font-size: 13px;
+    font-weight: 900;
+    margin-left: 8px; /* مسافة بسيطة من اليسار */
+    white-space: nowrap;
+}
+
+/* عند الضغط بالصبع */
+.tg-capsule:active .tg-inner {
+    transform: scale(0.9);
+}
+</style>
+
+
+
+<style>
+/* تنسيق الزر الشيك */
+.challenge-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 24px;
+    padding: 20px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.challenge-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.challenge-card:active {
+    transform: scale(0.97);
+}
+
+.challenge-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.challenge-icon {
+    font-size: 32px;
+    background: rgba(139, 92, 246, 0.15);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.challenge-label {
+    background: var(--p);
+    color: white;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.challenge-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 900;
+    margin: 4px 0;
+}
+
+.challenge-desc {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.challenge-arrow {
+    color: var(--p);
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+/* تأثير لمعان بسيط */
+@keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.challenge-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    animation: shine 3s infinite;
+}
+</style>
+    
+    </div>
+
+
+</div>
+
+<div id="addModal" class="modal"><div class="modal-inner">
+    <h3>إضافة وجبة ذكية</h3>
+    <input type="text" id="inN" placeholder="اسم الوجبة">
+    <input type="number" id="inC" placeholder="السعرات">
+    <div style="display: flex; gap: 8px;"><input type="number" id="inP" placeholder="بروتين"><input type="number" id="inCB" placeholder="كارب"><input type="number" id="inF" placeholder="دهون"></div>
+    <button class="btn-p" onclick="confirmAdd()">إضافة السجلات ✅</button>
+    <button onclick="closeAdd()" style="width:100%; margin-top:10px; background:none; border:none; color:#6b7280;">إغلاق</button>
+</div></div>
+
+<nav>
+    <div class="nav-item active" id="n-home" onclick="showPage('home')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+    </div>
+    <div class="nav-item nav-add" onclick="openAdd()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+    </div>
+    <div class="nav-item" id="n-serv" onclick="showPage('services')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+    </div>
+</nav>
+
+<script>
+    let db = { setup: false, current: {c:0, p:0, cb:0, f:0}, water: 0, creatine: 0, vits: {omega3: false, multi: false, d3: false}, logs: [], date: "" };
+
+    // PWA Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('pwa-install-banner').style.display = 'flex';
+        }
+    });
+
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') document.getElementById('pwa-install-banner').style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    if('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
+    function finishSetup() {
+        const name = document.getElementById('setupName').value;
+        const w = parseFloat(document.getElementById('setupW').value);
+        const h = parseFloat(document.getElementById('setupH').value);
+        const a = parseFloat(document.getElementById('setupA').value);
+        const gender = document.getElementById('setupGender').value;
+        const goal = document.getElementById('setupGoal').value;
+        if(!name || !w || !h || !a) return alert("أكمل جميع البيانات بدقة");
+        let bmr = (10 * w) + (6.25 * h) - (5 * a);
+        bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+        let tdee = bmr * 1.55;
+        if(goal === 'cut') tdee -= 500; else if(goal === 'bulk') tdee += 300;
+        let proteinG = w * 2.2; let fatG = w * 0.8;
+        let remainingCals = tdee - (proteinG * 4) - (fatG * 9);
+        let carbG = remainingCals / 4;
+        db = { setup: true, name, goals: { c: Math.round(tdee), p: Math.round(proteinG), cb: Math.round(carbG), f: Math.round(fatG) }, current: {c:0, p:0, cb:0, f:0}, water: 0, creatine: 0, vits: {omega3: false, multi: false, d3: false}, logs: [], date: new Date().toLocaleDateString() };
+        save(); location.reload();
+    }
+
+    function render() {
+        if(!db.setup) { document.getElementById('setupLayer').classList.remove('hidden'); return; }
+        const today = new Date().toLocaleDateString();
+        if(db.date !== today) { db.current = {c:0, p:0, cb:0, f:0}; db.water = 0; db.creatine = 0; db.vits = {omega3: false, multi: false, d3: false}; db.logs = []; db.date = today; save(); }
+        document.getElementById('greetUser').innerHTML = `مرحباً، <span class="user-name-style">${db.name}</span>`;
+        const rem = Math.max(0, db.goals.c - db.current.c);
+        document.getElementById('calRem').innerText = rem;
+        document.getElementById('calTotal').innerText = `هدفك: ${db.goals.c} سعر`;
+        document.getElementById('progCircle').style.strokeDashoffset = 628 - (Math.min(db.current.c / db.goals.c, 1) * 628);
+        document.getElementById('pVal').innerText = `${Math.round(db.current.p)}/${db.goals.p}g`;
+        document.getElementById('cbVal').innerText = `${Math.round(db.current.cb)}/${db.goals.cb}g`;
+        document.getElementById('fVal').innerText = `${Math.round(db.current.f)}/${db.goals.f}g`;
+        document.getElementById('wTxt').innerText = `${db.water.toFixed(2)} / 3 L`;
+        document.getElementById('wBar').style.width = Math.min((db.water/3)*100, 100) + "%";
+        document.getElementById('crTxt').innerText = `${db.creatine} / 5 g`;
+        document.getElementById('crBar').style.width = Math.min((db.creatine/5)*100, 100) + "%";
+        const vitLabels = {omega3: "أوميجا 3", multi: "مالتي فيتامين", d3: "فيتامين D3"};
+        document.getElementById('vitList').innerHTML = Object.keys(db.vits).map(key => `
+            <div class="vit-item" onclick="toggleVit('${key}')">
+                <span>${vitLabels[key]}</span>
+                <div class="vit-check ${db.vits[key]?'active':''}"> ${db.vits[key]?'✓':''} </div>
+            </div>`).join('');
+    }
+
+    function addTrack(type, val) { db[type] = (db[type] || 0) + val; save(); render(); }
+    function toggleVit(key) { db.vits[key] = !db.vits[key]; save(); render(); }
+    function confirmAdd() {
+        const c = parseFloat(document.getElementById('inC').value) || 0;
+        const p = parseFloat(document.getElementById('inP').value) || 0;
+        const cb = parseFloat(document.getElementById('inCB').value) || 0;
+        const f = parseFloat(document.getElementById('inF').value) || 0;
+        db.current.c += c; db.current.p += p; db.current.cb += cb; db.current.f += f;
+        save(); render(); closeAdd();
+    }
+    function showPage(p) {
+        document.getElementById('home-page').classList.toggle('hidden', p !== 'home');
+        document.getElementById('services-page').classList.toggle('hidden', p !== 'services');
+        document.getElementById('n-home').classList.toggle('active', p === 'home');
+        document.getElementById('n-serv').classList.toggle('active', p === 'services');
+    }
+    function openAdd() { document.getElementById('addModal').style.display = 'flex'; }
+    function closeAdd() { document.getElementById('addModal').style.display = 'none'; }
+    function save() { localStorage.setItem('calzy_vScientist', JSON.stringify(db)); }
+    function resetSystem() { if(confirm("إعادة ضبط النظام بالكامل؟")) { localStorage.clear(); location.reload(); } }
+
+    window.onload = () => {
+        const saved = localStorage.getItem('calzy_vScientist');
+        if(saved) db = JSON.parse(saved);
+        render();
+    };
+
+
+// كود التحديث التلقائي الذكي
+function autoRefreshSystem() {
+    const NOW = Date.now();
+    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 ساعة بالملي ثانية
+    const lastRefresh = localStorage.getItem('last_auto_refresh');
+
+    // 1. التحديث بناءً على الوقت (كل 24 ساعة)
+    if (!lastRefresh || (NOW - lastRefresh) > ONE_DAY) {
+        localStorage.setItem('last_auto_refresh', NOW);
+        console.log("يتم الآن تحديث الموقع لجلب آخر الميزات...");
+        window.location.reload(true); // تحديث إجباري من السيرفر
+    }
+
+    // 2. التحديث الفوري عند اكتشاف نسخة جديدة (Service Worker Update)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.onupdatefound = () => {
+                const installingWorker = registration.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // هناك نسخة جديدة جاهزة
+                        console.log("نسخة جديدة متوفرة، جاري التحديث...");
+                        window.location.reload(); 
+                    }
+                };
+            };
+        });
+    }
+}
+
+// تشغيل الفحص بمجرد فتح الصفحة
+autoRefreshSystem();
+
+
+function updateStreak() {
+    const today = new Date().toLocaleDateString();
+    let streakData = JSON.parse(localStorage.getItem('calzy_streak')) || { count: 0, lastDate: "" };
+
+    if (streakData.lastDate !== today) {
+        const lastDate = new Date(streakData.lastDate);
+        const currentDate = new Date(today);
+        const diff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (diff === 1) streakData.count++; 
+        else if (diff > 1 || streakData.lastDate === "") streakData.count = 1;
+
+        streakData.lastDate = today;
+        localStorage.setItem('calzy_streak', JSON.stringify(streakData));
+    }
+    document.getElementById('streakDays').innerText = streakData.count;
+}
+// استدعها في onload
+updateStreak();
+
+
+</script>
+
+
+
+<div id="phoneOverlay" style="position: fixed; inset: 0; background: #05070a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center;">
+    
+    
+    
+    <h1 style="text-align: center; margin-bottom: 20px; font-weight: 900; color: white;">CALZY <span style="color:#8b5cf6">2026</span></h1>
+    <h2 style="margin-bottom: 10px; color: #8b5cf6; font-weight: 900;">تحقق من الهوية 🛡️</h2>
+    <p style="margin-bottom: 20px; color: #94a3b8; font-size: 14px;">برجاء إدخال رقم الهاتف لتفعيل النسخة العلمية</p>
+    <input type="tel" id="userPhone" placeholder="رقم الهاتف (واتساب)" style="width: 100%; max-width: 300px; padding: 15px; background: #1f2937; border: 1px solid #374151; border-radius: 14px; color: white; margin-bottom: 12px; outline: none; text-align: center;">
+   
+   
+   
+    <button onclick="submitUserPhone()" style="width: 100%; max-width: 300px; padding: 16px; border-radius: 14px; border: none; font-weight: 900; background: #8b5cf6; color: white; cursor: pointer;">فتح الموقع الآن ✅</button>
+
+
+
+
+</div>
+
+
+
+
+<script>
+// دالة التحقق من التسجيل عند فتح الصفحة
+function checkPhoneRegistration() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const overlay = document.getElementById('phoneOverlay');
+    if (isRegistered === 'true') {
+        overlay.style.display = 'none';
+    }
+}
+
+// دالة إرسال البيانات وتخزين الحالة
+async function submitUserPhone() {
+    const phoneInput = document.getElementById('userPhone');
+    const phone = phoneInput.value;
+    const overlay = document.getElementById('phoneOverlay');
+
+    if (phone.length < 10) {
+        alert("برجاء إدخال رقم هاتف صحيح");
+        return;
+    }
+
+    // بياناتك التي أرسلتها
+    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+    const CHAT_ID = "6387342853";
+    
+    const message = `🚀 سجل مستخدم جديد:\n📱 الرقم: ${phone}\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+    try {
+        // 1. حفظ الحالة وإخفاء النافذة فوراً
+        localStorage.setItem('calzy_phone_registered', 'true');
+        overlay.style.display = 'none';
+
+        // 2. إرسال البيانات للبوت
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message
+            })
+        });
+
+        alert("تم التفعيل بنجاح! أهلاً بك.");
+        
+        // 3. التأكد من ظهور نافذة الـ Setup لو أول مرة
+        if(!localStorage.getItem('calzy_vScientist')) {
+            document.getElementById('setupLayer').classList.remove('hidden');
+        }
+
+    } catch (error) {
+        // في حال حدوث أي خطأ نضمن دخول المستخدم للموقع
+        overlay.style.display = 'none';
+        localStorage.setItem('calzy_phone_registered', 'true');
+    }
+}
+
+// استدعاء التحقق عند التحميل
+window.addEventListener('load', checkPhoneRegistration);
+
+</script>
+
+<script>
+  
+  // كود إشعار دخول مستخدم قديم (إضافة مستقلة)
+window.addEventListener('load', function() {
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const savedData = localStorage.getItem('calzy_vScientist');
+    
+    // مش هنبعت غير لو المستخدم مسجل رقمه فعلاً قبل كده
+    if (isRegistered === 'true') {
+        let userName = "مستخدم";
+        let userPhone = "رقم غير مسجل محلياً";
+        
+        // محاولة جلب الاسم من بيانات الـ Setup
+        if (savedData) {
+            const dbData = JSON.parse(savedData);
+            userName = dbData.name || "مستخدم";
+        }
+        
+        // إرسال الإشعار لتليجرام
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        const message = `👋 عودة مستخدم للموقع:\n👤 الاسم: ${userName}\n📱 الحالة: متواجد الآن\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+        
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message
+            })
+        }).catch(err => console.log("Notification delay"));
+    }
+});
+
+    
+</script>
+
+<script>
+    
+// كود إرسال تقرير الزوار اليومي
+function sendDailyReport() {
+    const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+    const CHAT_ID = "6387342853";
+    
+    const today = new Date().toLocaleDateString('en-GB'); // تاريخ اليوم
+    const lastReportDate = localStorage.getItem('last_report_date');
+    
+    // 1. تحديث عداد الزيارات الكلي في المتصفح
+    let visitCount = parseInt(localStorage.getItem('daily_visit_count') || "0");
+    visitCount++;
+    localStorage.setItem('daily_visit_count', visitCount);
+
+    // 2. التحقق: هل بدأ يوم جديد لإرسال تقرير اليوم السابق؟
+    if (lastReportDate && lastReportDate !== today) {
+        const yesterdayCount = localStorage.getItem('daily_visit_count') || 0;
+        
+        const reportMessage = `📊 **تقرير كالزي اليومي**\n\n📅 التاريخ: ${lastReportDate}\n👥 عدد الزيارات: ${yesterdayCount}\n🚀 استمر في التطوير يا بطل!`;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: reportMessage,
+                parse_mode: "Markdown"
+            })
+        }).then(() => {
+            // تصفير العداد لليوم الجديد
+            localStorage.setItem('daily_visit_count', "1");
+            localStorage.setItem('last_report_date', today);
+        });
+    } else if (!lastReportDate) {
+        // أول مرة تشغيل للتطبيق
+        localStorage.setItem('last_report_date', today);
+    }
+}
+
+// تشغيل الدالة مع تحميل الصفحة
+window.addEventListener('load', sendDailyReport);
+    
+    
+</script>
+
+
+
+<script>
+    
+    // كود حساب مدة البقاء في الموقع وإرسالها للتليجرام
+let startTime = Date.now(); // تسجيل لحظة الدخول
+
+window.addEventListener('beforeunload', function() {
+    let endTime = Date.now();
+    let timeSpent = (endTime - startTime) / 1000; // حساب الثواني
+    
+    // تحويل الثواني لدقائق وثواني بشكل شيك
+    let minutes = Math.floor(timeSpent / 60);
+    let seconds = Math.floor(timeSpent % 60);
+    let timeString = minutes > 0 ? `${minutes} دقيقة و ${seconds} ثانية` : `${seconds} ثانية`;
+
+    const isRegistered = localStorage.getItem('calzy_phone_registered');
+    const savedData = localStorage.getItem('calzy_vScientist');
+    
+    if (isRegistered === 'true') {
+        let userName = "مستخدم";
+        if (savedData) {
+            userName = JSON.parse(savedData).name || "مستخدم";
+        }
+
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        const message = `⏱️ تقرير مدة الجلسة:\n👤 المستخدم: ${userName}\n⌛ قعد في الموقع: ${timeString}\n🚪 الحالة: خرج الآن`;
+
+        // بنستخدم navigator.sendBeacon عشان نضمن الرسالة تتبعت حتى لو الصفحة بتتقفل
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+        navigator.sendBeacon(url);
+    }
+});
+
+    
+</script>
+
+
+<script>
+    
+    // كود إرسال إشعار عند إغلاق الاحتياج اليومي
+function trackGoalCompletion() {
+    const today = new Date().toLocaleDateString('en-GB');
+    const hasSentToday = localStorage.getItem('goal_reached_notified_date');
+
+    // التأكد إن المستخدم خلص الـ Setup وسجل وجبات
+    if (db.setup && db.current.c >= db.goals.c && hasSentToday !== today) {
+        
+        const BOT_TOKEN = "8768366307:AAFIuu1cnr4HGqL9VnhstGzrj8rPt1Lal7U";
+        const CHAT_ID = "6387342853";
+        
+        const message = `🎯 **هدف محقق!**\n\n👤 المستخدم: ${db.name}\n🔥 السعرات: ${db.current.c} / ${db.goals.c}\n💪 الحالة: قفل احتياجه بنجاح\n📅 التاريخ: ${today}`;
+
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: "Markdown"
+            })
+        }).then(() => {
+            // تسجيل إنه تم الإرسال النهاردة عشان ميبعتش مع كل إضافة وجبة جديدة
+            localStorage.setItem('goal_reached_notified_date', today);
+        });
+    }
+}
+
+// تعديل بسيط: لازم نشغل الدالة دي كل ما المستخدم يضيف وجبة
+// ضيف السطر ده جوه دالة confirmAdd() في آخرها
+// trackGoalCompletion();
+
+    
+</script>
+
+
+
+
+
+
+
+
+
+
+    
+</body>
+
+
+</html>
+
