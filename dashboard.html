@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calzy OS | Premium Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --purple: #a855f7; --bg: #020202; --card: rgba(15, 15, 15, 0.8); }
+        body { 
+            font-family: 'Cairo', sans-serif; background: var(--bg); color: white; overflow-x: hidden; padding-bottom: 120px;
+            background-image: radial-gradient(circle at top right, #1a0b2e 0%, #020202 60%);
+        }
+        
+        .glass-card { 
+            background: var(--card); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(168, 85, 247, 0.15); border-radius: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Modal Premium */
+        #mainModal {
+            position: fixed; bottom: -110%; left: 0; right: 0;
+            background: #080808; border-top: 1px solid var(--purple);
+            border-radius: 3rem 3rem 0 0; z-index: 200;
+            transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1); padding: 2.5rem;
+        }
+        #mainModal.open { bottom: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; z-index: 150; backdrop-filter: blur(8px); }
+        .overlay.show { display: block; }
+
+        /* Neon Progress */
+        #calorie-progress { 
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            filter: drop-shadow(0 0 8px var(--purple));
+        }
+
+        .premium-input { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.2rem; border-radius: 1.5rem; width: 100%; color: white; text-align: center;
+            transition: 0.3s;
+        }
+        .premium-input:focus { border-color: var(--purple); background: rgba(168, 85, 247, 0.05); outline: none; }
+
+        .btn-glow {
+            background: var(--purple); color: white; padding: 1.2rem; border-radius: 1.5rem;
+            font-weight: 900; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            transition: 0.3s;
+        }
+        .btn-glow:active { transform: scale(0.95); }
+
+        .bottom-nav { 
+            position: fixed; bottom: 15px; left: 15px; right: 15px; 
+            background: rgba(10, 10, 10, 0.8); height: 80px; border-radius: 2rem;
+            display: flex; justify-content: space-around; align-items: center; 
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(15px); z-index: 100;
+        }
+        .add-btn-main { 
+            background: linear-gradient(135deg, #a855f7, #6b21a8); width: 65px; height: 65px; 
+            border-radius: 22px; display: flex; align-items: center; justify-content: center; 
+            margin-top: -60px; box-shadow: 0 15px 30px rgba(168, 85, 247, 0.4); transform: rotate(45deg);
+        }
+        .add-btn-main svg { transform: rotate(-45deg); }
+    </style>
+</head>
+<body>
+
+    <div class="p-8 flex justify-between items-end">
+        <div>
+            <span class="text-purple-500 font-bold text-xs tracking-[3px] uppercase">Warrior Status</span>
+            <h2 id="userName" class="text-3xl font-black mt-1">المحارب...</h2>
+        </div>
+        <button onclick="resetDailyMetrics()" class="w-14 h-14 glass-card flex items-center justify-center border-purple-500/30 active:scale-90 transition">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="px-6 mb-8">
+        <div class="glass-card py-14 flex flex-col items-center relative overflow-hidden">
+            <svg class="w-64 h-64 transform -rotate-90">
+                <circle cx="128" cy="128" r="105" stroke="rgba(255,255,255,0.02)" stroke-width="15" fill="transparent" />
+                <circle id="calorie-progress" cx="128" cy="128" r="105" stroke="url(#purple-gradient)" stroke-width="15" fill="transparent" stroke-dasharray="660" stroke-dashoffset="660" stroke-linecap="round" />
+                <defs>
+                    <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#a855f7" />
+                        <stop offset="100%" stop-color="#6b21a8" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="cal-rem" class="text-6xl font-black tracking-tighter">0</span>
+                <span class="text-zinc-500 text-[10px] font-bold tracking-[6px] uppercase mt-2">Remained</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-6 grid grid-cols-3 gap-4 mb-8">
+        <div class="glass-card p-4 text-center">
+            <div class="text-[10px] text-zinc-500 mb-2 uppercase">Protein</div>
+            <div id="p-val" class="text-lg font-black text-white">0g</div>
+        </div>
+        <div class="glass-card p-4 text-center border-b-2 border-blue-500/20">
+            <div class="text-[10px] text-zinc-500 mb-2 uppercase">Carbs</div>
+            <div id="c-val" class="text-lg font-black text-white">0g</div>
+        </div>
+        <div class="glass-card p-4 text-center border-b-2 border-orange-500/20">
+            <div class="text-[10px] text-zinc-500 mb-2 uppercase">Fats</div>
+            <div id="f-val" class="text-lg font-black text-white">0g</div>
+        </div>
+    </div>
+
+    <div class="px-6 space-y-4">
+        <div class="glass-card p-6 flex justify-between items-center bg-gradient-to-l from-blue-900/10 to-transparent">
+            <div>
+                <h4 class="font-black text-lg text-blue-400">💧 Water</h4>
+                <p id="water-count" class="text-zinc-400 text-sm tracking-widest">0.0L</p>
+            </div>
+            <button onclick="addWater(0.25)" class="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400 font-black">+</button>
+        </div>
+
+        <div class="glass-card p-6">
+            <h4 class="font-black text-lg text-purple-400 mb-4 tracking-tighter">💊 Supplements</h4>
+            <div id="supp-list" class="space-y-3 text-sm"></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeModal()"></div>
+    <div id="mainModal">
+        <h3 class="text-2xl font-black mb-8 text-center text-purple-500 uppercase italic">Add Fuel</h3>
+        <div class="space-y-4">
+            <input type="number" id="m-cals" class="premium-input" placeholder="Calories (kcal)">
+            <div class="grid grid-cols-3 gap-2">
+                <input type="number" id="m-prot" class="premium-input !p-3" placeholder="P">
+                <input type="number" id="m-carb" class="premium-input !p-3" placeholder="C">
+                <input type="number" id="m-fat" class="premium-input !p-3" placeholder="F">
+            </div>
+            <button onclick="submitMeal()" class="w-full btn-glow mt-6">SAVE TO DATABASE 🔥</button>
+        </div>
+    </div>
+
+   <nav class="bottom-nav">
+    <a href="dashboard.html" class="nav-item text-purple-500">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </a>
+    
+    <div class="add-btn-main" onclick="openModal()">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 5v14M5 12h14"/></svg>
+    </div>
+    
+    <a href="me.html" class="nav-item text-zinc-500 hover:text-purple-400 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    </a>
+</nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9wQsKHn4z0ERIny25UKXsiOhJBOZYmwo",
+            authDomain: "clox-1e0b1.firebaseapp.com",
+            projectId: "clox-1e0b1",
+            storageBucket: "clox-1e0b1.firebasestorage.app",
+            messagingSenderId: "356484321549",
+            appId: "1:356484321549:web:758ab4c0f6b6c3f2b5a044"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const userId = sessionStorage.getItem('userPhone') || "guest";
+
+        // الـ Metrics الأساسية
+        let metrics = { 
+            target: 0, consumed: 0, p_now: 0, c_now: 0, f_now: 0, water: 0, 
+            lastReset: "", supplements: { creatine: false, omega3: false, multivitamin: false } 
+        };
+        let goals = { p: 0, c: 0, f: 0 };
+
+        async function sync() {
+            try {
+                const snap = await getDoc(doc(db, "user_metrics", userId));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    
+                    // تحديث القيم من الداتابيز
+                    metrics = { ...metrics, ...d };
+                    goals = { p: Number(d.protein) || 0, c: Number(d.carbs) || 0, f: Number(d.fat) || 0 };
+                    
+                    document.getElementById('userName').innerText = d.name || "المحارب";
+
+                    const today = new Date().toLocaleDateString();
+                    if (metrics.lastReset !== today) {
+                        await resetDailyMetrics(false);
+                    } else {
+                        renderSupps();
+                        updateUI();
+                    }
+                }
+            } catch (e) { console.error("Sync Error:", e); }
+        }
+
+        window.resetDailyMetrics = async (showConfirm = true) => {
+            if (showConfirm && !confirm("هل تريد تصفير عدادات اليوم؟")) return;
+            
+            const today = new Date().toLocaleDateString();
+            const resetData = {
+                consumed: 0, p_now: 0, c_now: 0, f_now: 0, water: 0,
+                lastReset: today,
+                supplements: { creatine: false, omega3: false, multivitamin: false }
+            };
+
+            metrics = { ...metrics, ...resetData };
+            await updateDoc(doc(db, "user_metrics", userId), resetData);
+            
+            renderSupps();
+            updateUI();
+            if (showConfirm) alert("تم بنجاح! يوم جديد، طاقة جديدة 🔥");
+        };
+
+        function updateUI() {
+            // حساب السعرات المتبقية
+            const remaining = Math.max(0, Number(metrics.target) - Number(metrics.consumed));
+            document.getElementById('cal-rem').innerText = Math.floor(remaining);
+            
+            // تحديث قيم الـ Macros
+            document.getElementById('p-val').innerText = `${metrics.p_now}g / ${goals.p}g`;
+            document.getElementById('c-val').innerText = `${metrics.c_now}g / ${goals.c}g`;
+            document.getElementById('f-val').innerText = `${metrics.f_now}g / ${goals.f}g`;
+            document.getElementById('water-count').innerText = `${Number(metrics.water).toFixed(2)}L`;
+
+            // تحديث شريط التقدم الدائري
+            const target = Number(metrics.target) || 1; // تجنب القسمة على صفر
+            const offset = 660 - (Math.min(1, metrics.consumed / target) * 660);
+            document.getElementById('calorie-progress').style.strokeDashoffset = offset;
+        }
+
+        function renderSupps() {
+            const list = document.getElementById('supp-list');
+            const items = { creatine: 'Creatine Monohydrate', omega3: 'Omega 3', multivitamin: 'Multivitamin' };
+            list.innerHTML = Object.entries(items).map(([key, label]) => `
+                <div class="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <span class="${metrics.supplements[key] ? 'text-purple-400 line-through opacity-50' : ''}">${label}</span>
+                    <input type="checkbox" onchange="toggleSupp('${key}')" ${metrics.supplements[key] ? 'checked' : ''} class="w-6 h-6 accent-purple-600">
+                </div>
+            `).join('');
+        }
+
+        window.toggleSupp = async (key) => {
+            metrics.supplements[key] = !metrics.supplements[key];
+            renderSupps();
+            await updateDoc(doc(db, "user_metrics", userId), { supplements: metrics.supplements });
+        };
+
+        window.openModal = () => { 
+            document.getElementById('mainModal').classList.add('open'); 
+            document.getElementById('overlay').classList.add('show'); 
+        };
+        
+        window.closeModal = () => { 
+            document.getElementById('mainModal').classList.remove('open'); 
+            document.getElementById('overlay').classList.remove('show'); 
+            // تفريغ المدخلات
+            document.getElementById('m-cals').value = '';
+            document.getElementById('m-prot').value = '';
+            document.getElementById('m-carb').value = '';
+            document.getElementById('m-fat').value = '';
+        };
+
+        window.submitMeal = async () => {
+            // تحويل المدخلات لأرقام لضمان دقة الجمع
+            const c = Number(document.getElementById('m-cals').value) || 0;
+            const p = Number(document.getElementById('m-prot').value) || 0;
+            const carb = Number(document.getElementById('m-carb').value) || 0;
+            const f = Number(document.getElementById('m-fat').value) || 0;
+
+            // تحديث الحالة المحلية
+            metrics.consumed += c;
+            metrics.p_now += p; 
+            metrics.c_now += carb; 
+            metrics.f_now += f;
+            
+            updateUI(); 
+            closeModal();
+
+            // تحديث الـ Firebase
+            try {
+                await updateDoc(doc(db, "user_metrics", userId), { 
+                    consumed: metrics.consumed, 
+                    p_now: metrics.p_now, 
+                    c_now: metrics.c_now, 
+                    f_now: metrics.f_now 
+                });
+            } catch (e) { console.error("Update Error:", e); }
+        };
+
+        window.addWater = async (amt) => {
+            metrics.water = (Number(metrics.water) || 0) + amt;
+            updateUI();
+            await updateDoc(doc(db, "user_metrics", userId), { water: metrics.water });
+        };
+
+        // تشغيل المزامنة عند التحميل
+        sync();
+    </script>
+</body>
+</html>
