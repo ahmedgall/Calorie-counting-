@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calzy OS | Warrior Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --purple-glow: #9333ea; --dark-bg: #030303; }
+        body { 
+            font-family: 'Cairo', sans-serif; background: var(--dark-bg);
+            background-image: radial-gradient(circle at bottom left, #1e0b36 0%, #030303 50%);
+            color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .setup-card { 
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(20px);
+            border: 1px solid rgba(147, 51, 234, 0.2); border-radius: 2.5rem;
+            width: 90%; max-width: 500px; padding: 2rem;
+        }
+        .step { display: none; }
+        .step.active { display: block; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .input-premium { 
+            background: #0a0a0a; border: 1px solid #222; padding: 1.2rem;
+            border-radius: 1.25rem; width: 100%; text-align: center; color: white; margin-top: 1rem;
+        }
+        .input-premium:focus { border-color: var(--purple-glow); outline: none; }
+        
+        .option-btn {
+            background: #0f0f0f; border: 1px solid #222; padding: 1rem;
+            border-radius: 1.25rem; width: 100%; margin-top: 1rem; transition: 0.3s;
+            text-align: center; cursor: pointer;
+        }
+        .option-btn.selected { background: var(--purple-glow); border-color: white; font-weight: bold; }
+        .btn-next { background: var(--purple-glow); width: 100%; padding: 1.2rem; border-radius: 1.25rem; margin-top: 2rem; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <div class="setup-card">
+        <div class="mb-8 text-center">
+            <h2 class="text-purple-500 font-black tracking-widest uppercase text-sm">Warrior Analysis</h2>
+            <div id="stepIndicator" class="text-xs text-zinc-600 mt-2">خطوة 1 من 4</div>
+        </div>
+
+        <form id="macsForm">
+            <div class="step active" id="step1">
+                <h3 class="text-2xl font-bold text-center">ما هو اسمك أيها المحارب؟</h3>
+                <input type="text" id="userName" class="input-premium" placeholder="ادخل اسمك">
+                <button type="button" onclick="nextStep(2)" class="btn-next">التالي</button>
+            </div>
+
+            <div class="step" id="step2">
+                <h3 class="text-2xl font-bold text-center">بياناتك الجسدية</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="userAge" class="input-premium" placeholder="العمر">
+                    <input type="number" id="userWeight" class="input-premium" placeholder="الوزن (كجم)">
+                </div>
+                <input type="number" id="userHeight" class="input-premium" placeholder="الطول (سم)">
+                <button type="button" onclick="nextStep(3)" class="btn-next">التالي</button>
+            </div>
+
+            <div class="step" id="step3">
+                <h3 class="text-2xl font-bold text-center">معدل نشاطك الأسبوعي</h3>
+                <div class="option-btn" onclick="setActivity(1.2, this)">خامل (لا يوجد تمرين)</div>
+                <div class="option-btn" onclick="setActivity(1.375, this)">خفيف (1-3 أيام)</div>
+                <div class="option-btn" onclick="setActivity(1.55, this)">متوسط (3-5 أيام)</div>
+                <div class="option-btn" onclick="setActivity(1.725, this)">نشط جداً (يومياً)</div>
+                <button type="button" onclick="nextStep(4)" class="btn-next">التالي</button>
+            </div>
+
+            <div class="step" id="step4">
+                <h3 class="text-2xl font-bold text-center">ما هو هدفك الحالي؟</h3>
+                <div class="option-btn" onclick="setGoal('cut', this)">تنشيف (خسارة دهون)</div>
+                <div class="option-btn" onclick="setGoal('maintain', this)">ثبات (محافظة)</div>
+                <div class="option-btn" onclick="setGoal('bulk', this)">تضخيم (زيادة عضلات)</div>
+                <button type="button" id="saveBtn" onclick="calculateAndSave()" class="btn-next">استخراج النتائج 🔥</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9wQsKHn4z0ERIny25UKXsiOhJBOZYmwo",
+            authDomain: "clox-1e0b1.firebaseapp.com",
+            projectId: "clox-1e0b1",
+            storageBucket: "clox-1e0b1.firebasestorage.app",
+            messagingSenderId: "356484321549",
+            appId: "1:356484321549:web:758ab4c0f6b6c3f2b5a044"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let activityFactor = 1.2;
+        let userGoal = 'maintain';
+
+        window.nextStep = (n) => {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+            document.getElementById('stepIndicator').innerText = `خطوة ${n} من 4`;
+        }
+
+        window.setActivity = (val, btn) => {
+            activityFactor = val;
+            document.querySelectorAll('#step3 .option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        window.setGoal = (goal, btn) => {
+            userGoal = goal;
+            document.querySelectorAll('#step4 .option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        window.calculateAndSave = async () => {
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "جاري الحفظ...";
+            btn.disabled = true;
+
+            const name = document.getElementById('userName').value;
+            const weight = parseFloat(document.getElementById('userWeight').value);
+            const height = parseFloat(document.getElementById('userHeight').value);
+            const age = parseInt(document.getElementById('userAge').value);
+
+            if(!name || !weight || !height || !age) {
+                alert("برجاء اكتمال كافة البيانات");
+                btn.innerText = "استخراج النتائج 🔥";
+                btn.disabled = false;
+                return;
+            }
+
+            // معادلة Mifflin-St Jeor للرجال
+            let bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            let tdee = bmr * activityFactor;
+
+            let targetCalories = tdee;
+            if (userGoal === 'cut') targetCalories -= 500;
+            if (userGoal === 'bulk') targetCalories += 500;
+
+            const protein = weight * 2;
+            const fat = weight * 0.8;
+            const carbs = (targetCalories - ((protein * 4) + (fat * 9))) / 4;
+
+            try {
+                const userId = sessionStorage.getItem('userPhone') || "guest";
+                await setDoc(doc(db, "user_metrics", userId), {
+                    name: name,
+                    target: Math.round(targetCalories), // تأكد أن الاسم "target" ليتوافق مع الـ Dashboard
+                    protein: Math.round(protein),
+                    carbs: Math.round(carbs),
+                    fat: Math.round(fat),
+                    consumed: 0, p_now: 0, c_now: 0, f_now: 0, water: 0, // تصفير العدادات عند الإعداد الجديد
+                    lastReset: new Date().toLocaleDateString(),
+                    goal: userGoal
+                }, { merge: true });
+
+                alert("تم تحليل بياناتك بنجاح!");
+                window.location.href = "dashboard.html"; 
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ في الاتصال");
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
