@@ -35,9 +35,17 @@
         }
         .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(147, 51, 234, 0.4); }
         .hidden { display: none; }
+        #loaderOverlay { background: #030303; position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
+
+    <div id="loaderOverlay">
+        <div class="text-center">
+            <h2 class="logo-text text-4xl font-black text-white italic animate-pulse">CALZY<span class="text-purple-600">OS</span></h2>
+            <p class="text-[8px] tracking-[4px] mt-2 text-zinc-600 uppercase">Checking Authorization...</p>
+        </div>
+    </div>
 
     <div class="premium-card">
         <div class="text-center mb-12">
@@ -78,10 +86,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyD9wQsKHn4z0ERIny25UKXsiOhJBOZYmwo",
             authDomain: "clox-1e0b1.firebaseapp.com",
@@ -91,64 +98,68 @@
             appId: "1:356484321549:web:758ab4c0f6b6c3f2b5a044"
         };
 
-        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // بيانات UltraMsg
         const API_URL = "https://api.ultramsg.com/instance171381/messages/chat";
         const TOKEN = "5fh5hfytsg5mml9n";
 
         let generatedOTP = "";
         let phoneNumber = "";
 
+        // --- التعديل الأساسي: مراقبة حالة الدخول ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // المستخدم مسجل دخوله فعلاً
+                console.log("User already logged in:", user.uid);
+                window.location.href = "dashboard.html";
+            } else {
+                // لا يوجد مستخدم، نخفي شاشة التحميل ونظهر الكارت
+                document.getElementById('loaderOverlay').classList.add('hidden');
+            }
+        });
+
         async function handleWelcome(uid, name) {
             const welcomeDiv = document.getElementById('welcomeText');
             try {
                 const userSnap = await getDoc(doc(db, "users", uid));
                 if (userSnap.exists()) {
-                    welcomeDiv.innerHTML = `<p class="text-purple-400 font-bold animate-pulse">مرحباً بعودتك، ${name || 'يا محارب'}</p>`;
+                    welcomeDiv.innerHTML = `<p class="text-purple-400 font-bold animate-pulse">مرحباً بعودتك، ${name || 'يا بطل'}</p>`;
                 } else {
                     welcomeDiv.innerHTML = `<p class="text-green-400 font-bold">مرحباً بك في عائلة Calzy</p>`;
                 }
             } catch(e) { console.error("Firebase Error:", e); }
         }
 
-        // تسجيل الدخول بجوجل
         document.getElementById('googleBtn').onclick = async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                await handleWelcome(user.uid, user.displayName);
                 await setDoc(doc(db, "users", user.uid), {
                     name: user.displayName,
                     email: user.email,
                     lastLogin: serverTimestamp()
                 }, { merge: true });
-                sessionStorage.setItem('userPhone', user.email);
-                setTimeout(() => window.location.href = "macs.html", 1500);
+                window.location.href = "dashboard.html";
             } catch (error) { 
-                console.error(error);
-                alert("خطأ في جوجل: تأكد من تفعيل Google Auth في Firebase Console"); 
+                alert("خطأ في جوجل: تأكد من تفعيل Google Auth"); 
             }
         };
 
-        // إرسال الـ OTP عبر UltraMsg
         document.getElementById('sendBtn').onclick = async () => {
             const input = document.getElementById('userPhone').value.trim();
             if (!input) return alert("من فضلك أدخل رقم الهاتف");
             
             phoneNumber = input;
             if (!phoneNumber.startsWith('20')) phoneNumber = '20' + phoneNumber.replace(/^0+/, '');
-
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
             
             const params = new URLSearchParams();
             params.append("token", TOKEN);
             params.append("to", phoneNumber);
-            params.append("body", `*CALZY OS | SECURITY*\n\nكود التحقق الخاص بك هو: *${generatedOTP}*\n\nاستخدم الكود لفتح نظامك الآن.`);
+            params.append("body", `*CALZY OS | SECURITY*\n\nكود التحقق الخاص بك هو: *${generatedOTP}*`);
 
             try {
                 const response = await fetch(API_URL, { 
@@ -159,25 +170,24 @@
                 if (response.ok) {
                     document.getElementById('phoneStep').classList.add('hidden');
                     document.getElementById('otpStep').classList.remove('hidden');
-                } else {
-                    alert("فشل الإرسال: تأكد من شحن رصيد UltraMsg أو تمديد الفترة");
                 }
             } catch (error) { alert("خطأ في الاتصال بسيرفر الرسائل"); }
         };
 
-        // تأكيد الـ OTP
         document.getElementById('verifyBtn').onclick = async () => {
             const userCode = document.getElementById('otpInput').value.trim();
             if (userCode === generatedOTP) {
-                sessionStorage.setItem('userPhone', phoneNumber);
-                // هنا بنخزن المستخدم برقم تليفونه في الداتا بيز
+                // ملاحظة: الـ Phone OTP هنا لا ينشئ User في Firebase Auth تلقائياً بالطريقة دي
+                // لذا سنستخدم Firestore للتحقق اليدوي في الـ Dashboard لو لم يكن جوجل
                 await setDoc(doc(db, "users", phoneNumber), {
                     phone: phoneNumber,
-                    lastLogin: serverTimestamp()
+                    lastLogin: serverTimestamp(),
+                    authType: 'phone'
                 }, { merge: true });
                 
-                await handleWelcome(phoneNumber, "يا بطل");
-                setTimeout(() => window.location.href = "macs.html", 1500);
+                sessionStorage.setItem('isManualAuth', 'true');
+                sessionStorage.setItem('userPhone', phoneNumber);
+                window.location.href = "dashboard.html";
             } else {
                 alert("الكود غير صحيح");
             }
