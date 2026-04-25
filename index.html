@@ -9,62 +9,24 @@
     <style>
         :root { --purple-glow: #9333ea; --dark-bg: #030303; }
         body { 
-            font-family: 'Cairo', sans-serif; 
-            background-color: var(--dark-bg);
+            font-family: 'Cairo', sans-serif; background-color: var(--dark-bg);
             background-image: radial-gradient(circle at top right, #1e0b36 0%, #030303 50%);
-            color: #ffffff; 
-            min-height: 100vh; 
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center; 
+            color: #ffffff; min-height: 100vh; display: flex; align-items: center; justify-content: center; 
         }
-
         .premium-card { 
-            background: rgba(10, 10, 10, 0.6); 
-            backdrop-filter: blur(30px); 
-            border: 1px solid rgba(147, 51, 234, 0.2); 
-            border-radius: 3rem; 
-            width: 100%; max-width: 450px; 
-            padding: 4rem 3rem; 
-            box-shadow: 0 0 80px rgba(0, 0, 0, 1), 0 0 30px rgba(147, 51, 234, 0.1);
-            position: relative;
+            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(30px); 
+            border: 1px solid rgba(147, 51, 234, 0.2); border-radius: 3rem; 
+            width: 100%; max-width: 450px; padding: 4rem 3rem; 
+            box-shadow: 0 0 80px rgba(0, 0, 0, 1); position: relative;
         }
-
-        .premium-card::before {
-            content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            background: linear-gradient(45deg, transparent, rgba(147, 51, 234, 0.3), transparent);
-            border-radius: 3rem; z-index: -1;
-        }
-
-        .logo-text { font-family: 'Orbitron', sans-serif; letter-spacing: -2px; }
-
         .input-premium { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(147, 51, 234, 0.1); 
-            padding: 1.3rem; border-radius: 1.5rem; 
-            width: 100%; text-align: center; color: white;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(147, 51, 234, 0.1); 
+            padding: 1.3rem; border-radius: 1.5rem; width: 100%; text-align: center; color: white;
         }
-
-        .input-premium:focus { 
-            background: rgba(147, 51, 234, 0.05);
-            border-color: var(--purple-glow); outline: none;
-            box-shadow: 0 0 20px rgba(147, 51, 234, 0.2);
-        }
-
         .btn-main { 
             background: linear-gradient(135deg, #9333ea 0%, #581c87 100%);
-            color: white; font-weight: 700; padding: 1.3rem; border-radius: 1.5rem; 
-            width: 100%; transition: 0.4s; border: none; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            color: white; padding: 1.3rem; border-radius: 1.5rem; width: 100%; cursor: pointer;
         }
-
-        .btn-main:hover { 
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(147, 51, 234, 0.4);
-        }
-
-        .welcome-msg { animation: fadeInDown 0.8s ease-out; }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none; }
     </style>
 </head>
@@ -72,38 +34,22 @@
 
     <div class="premium-card">
         <div class="text-center mb-12">
-            <h1 class="logo-text text-6xl font-black text-white italic">CALZY<span class="text-purple-600">OS</span></h1>
-            <div id="welcomeText" class="welcome-msg mt-4">
-                <p class="text-zinc-500 text-xs tracking-[5px] uppercase">Elite Health System</p>
-            </div>
+            <h1 class="text-5xl font-black text-white italic">CALZY<span class="text-purple-600">OS</span></h1>
+            <div id="welcomeText" class="mt-4"><p class="text-zinc-500 text-xs tracking-[5px] uppercase">Elite Health System</p></div>
         </div>
 
-        <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl mb-6 transition-all group">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 ml-3">
+        <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl mb-6">
             <span class="font-bold text-sm">استكمال بواسطة جوجل</span>
         </button>
 
-        <div class="relative my-8">
-            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/5"></div></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#0a0a0a] px-4 text-zinc-600">أو الهوية الرقمية</span></div>
-        </div>
-
         <div id="phoneStep" class="space-y-4">
             <input type="tel" id="userPhone" class="input-premium" placeholder="2010xxxxxxxx" dir="ltr">
-            <button onclick="sendOTP()" id="sendBtn" class="btn-main">دخول المحاربين</button>
+            <button onclick="sendOTP()" class="btn-main">دخول المحاربين</button>
         </div>
 
         <div id="otpStep" class="hidden space-y-4">
-            <div class="text-center">
-                <p class="text-purple-400 font-bold">تفقد الواتساب الخاص بك</p>
-                <p class="text-[10px] text-zinc-500 mt-1">أرسلنا كود التحقق السري</p>
-            </div>
             <input type="text" id="otpInput" class="input-premium text-3xl tracking-[10px]" placeholder="000000">
-            <button onclick="verifyOTP()" id="verifyBtn" class="btn-main">تأكيد الهوية</button>
-        </div>
-
-        <div class="mt-12 text-center opacity-20">
-            <p class="text-[8px] tracking-[6px] uppercase">Design by Fixaa Arab Software</p>
+            <button onclick="verifyOTP()" class="btn-main">تأكيد الهوية</button>
         </div>
     </div>
 
@@ -131,34 +77,13 @@
         let generatedOTP = "";
         let phoneNumber = "";
 
-        // فحص نوع المستخدم للترحيب
-        async function handleWelcome(uid, name) {
-            const userRef = doc(db, "users", uid);
-            const userSnap = await getDoc(userRef);
-            const welcomeDiv = document.getElementById('welcomeText');
-
-            if (userSnap.exists()) {
-                welcomeDiv.innerHTML = `<p class="text-purple-400 font-bold animate-pulse">مرحباً بعودتك، ${name || 'يا محارب'}</p>`;
-            } else {
-                welcomeDiv.innerHTML = `<p class="text-green-400 font-bold">مرحباً بك في عائلة Calzy</p>`;
-            }
-        }
-
         window.loginWithGoogle = async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                await handleWelcome(user.uid, user.displayName);
-                
-                await setDoc(doc(db, "users", user.uid), {
-                    name: user.displayName,
-                    email: user.email,
-                    lastLogin: serverTimestamp()
-                }, { merge: true });
-
-                setTimeout(() => window.location.href = "macs.html", 2000);
-            } catch (error) { console.error(error); }
+                sessionStorage.setItem('userPhone', result.user.email); // تخزين الإيميل كمعرف
+                window.location.href = "macs.html";
+            } catch (error) { console.error("Google Error:", error); }
         };
 
         window.sendOTP = async () => {
@@ -167,22 +92,31 @@
 
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
             
-            const params = new URLSearchParams({
-                "token": TOKEN,
-                "to": phoneNumber,
-                "body": `*CALZY OS | THE WARRIOR*\n\nكود الدخول الخاص بك: *${generatedOTP}*\n\nاستعد لكسر حدودك اليوم.`
-            });
+            const params = new URLSearchParams();
+            params.append("token", TOKEN);
+            params.append("to", phoneNumber);
+            params.append("body", `كود الدخول لـ Calzy OS: ${generatedOTP}`);
 
-            await fetch(API_URL, { method: 'POST', body: params });
-            document.getElementById('phoneStep').classList.add('hidden');
-            document.getElementById('otpStep').classList.remove('hidden');
+            try {
+                const response = await fetch(API_URL, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: params
+                });
+                
+                if(response.ok) {
+                    document.getElementById('phoneStep').classList.add('hidden');
+                    document.getElementById('otpStep').classList.remove('hidden');
+                } else {
+                    alert("خطأ في الاتصال بخدمة الواتساب");
+                }
+            } catch(e) { console.error(e); }
         };
 
         window.verifyOTP = async () => {
             if (document.getElementById('otpInput').value === generatedOTP) {
-                // في حالة رقم الهاتف نعتبره مستخدم بناء على الرقم
-                await handleWelcome(phoneNumber, "يا بطل");
-                setTimeout(() => window.location.href = "macs.html", 2000);
+                sessionStorage.setItem('userPhone', phoneNumber); // تخزين الرقم للجلسة
+                window.location.href = "macs.html";
             } else { alert("الكود غير صحيح"); }
         };
     </script>
