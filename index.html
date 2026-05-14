@@ -9,54 +9,77 @@
     <style>
         :root { --purple-glow: #9333ea; --dark-bg: #030303; }
         body { 
-            font-family: 'Cairo', sans-serif; background-color: var(--dark-bg);
+            font-family: 'Cairo', sans-serif; 
+            background-color: var(--dark-bg);
             background-image: radial-gradient(circle at top right, #1e0b36 0%, #030303 50%);
-            color: #ffffff; min-height: 100vh; overflow: hidden;
+            color: #ffffff; 
+            min-height: 100vh; 
+            overflow: hidden;
             display: flex; align-items: center; justify-content: center; 
         }
+
         .premium-card { 
-            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(30px); 
-            border: 1px solid rgba(147, 51, 234, 0.2); border-radius: 3rem; 
-            width: 100%; max-width: 450px; padding: 4rem 3rem; 
+            background: rgba(10, 10, 10, 0.6); 
+            backdrop-filter: blur(30px); 
+            border: 1px solid rgba(147, 51, 234, 0.2); 
+            border-radius: 3rem; 
+            width: 100%; max-width: 450px; 
+            padding: 3.5rem 2.5rem; 
             box-shadow: 0 0 80px rgba(0, 0, 0, 1), 0 0 30px rgba(147, 51, 234, 0.1);
             position: relative;
         }
+
         .logo-text { font-family: 'Orbitron', sans-serif; letter-spacing: -2px; }
+
         .input-premium { 
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(147, 51, 234, 0.1); 
-            padding: 1.3rem; border-radius: 1.5rem; width: 100%; text-align: center; color: white;
-            transition: 0.5s;
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(147, 51, 234, 0.1); 
+            padding: 1.1rem; border-radius: 1.2rem; 
+            width: 100%; text-align: center; color: white;
+            transition: 0.4s;
         }
-        .input-premium:focus { border-color: var(--purple-glow); outline: none; box-shadow: 0 0 20px rgba(147, 51, 234, 0.2); }
+
+        .input-premium:focus { 
+            border-color: var(--purple-glow); outline: none;
+            background: rgba(147, 51, 234, 0.05);
+        }
+
         .btn-main { 
             background: linear-gradient(135deg, #9333ea 0%, #581c87 100%);
-            color: white; font-weight: 700; padding: 1.3rem; border-radius: 1.5rem; 
-            width: 100%; transition: 0.4s; border: none; cursor: pointer;
+            color: white; font-weight: 700; padding: 1.1rem; border-radius: 1.2rem; 
+            width: 100%; transition: 0.3s; border: none; cursor: pointer;
         }
-        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(147, 51, 234, 0.4); }
+
+        .btn-main:hover { transform: translateY(-2px); opacity: 0.9; }
         .hidden { display: none; }
-        #loaderOverlay { background: #030303; position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; }
+        
+        /* Loader بسيط للتحويل */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--purple-glow);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="loaderOverlay">
-        <div class="text-center">
-            <h2 class="logo-text text-4xl font-black text-white italic animate-pulse">CALZY<span class="text-purple-600">OS</span></h2>
-            <p class="text-[8px] tracking-[4px] mt-2 text-zinc-600 uppercase">Checking Authorization...</p>
-        </div>
-    </div>
-
     <div class="premium-card">
-        <div class="text-center mb-12">
+        <div class="text-center mb-10">
             <h1 class="logo-text text-6xl font-black text-white italic">CALZY<span class="text-purple-600">OS</span></h1>
             <div id="welcomeText" class="mt-4">
                 <p class="text-zinc-500 text-xs tracking-[5px] uppercase">Elite Health System</p>
             </div>
         </div>
 
-        <button id="googleBtn" class="w-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl mb-6 transition-all">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 ml-3" alt="G">
+        <!-- زر جوجل -->
+        <button id="googleBtn" onclick="loginWithGoogle()" class="w-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl mb-6 transition-all group">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 ml-3">
             <span class="font-bold text-sm">استكمال بواسطة جوجل</span>
         </button>
 
@@ -65,18 +88,19 @@
             <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#0a0a0a] px-4 text-zinc-600">أو الهوية الرقمية</span></div>
         </div>
 
+        <!-- مرحلة رقم الهاتف -->
         <div id="phoneStep" class="space-y-4">
             <input type="tel" id="userPhone" class="input-premium" placeholder="2010xxxxxxxx" dir="ltr">
-            <button id="sendBtn" class="btn-main">دخول المحاربين</button>
+            <button onclick="sendOTP()" id="sendBtn" class="btn-main">دخول المحاربين</button>
         </div>
 
+        <!-- مرحلة الـ OTP -->
         <div id="otpStep" class="hidden space-y-4">
             <div class="text-center">
                 <p class="text-purple-400 font-bold">تفقد الواتساب الخاص بك</p>
-                <p class="text-[10px] text-zinc-500 mt-1">أرسلنا كود التحقق السري</p>
             </div>
             <input type="text" id="otpInput" class="input-premium text-3xl tracking-[10px]" placeholder="000000">
-            <button id="verifyBtn" class="btn-main">تأكيد الهوية</button>
+            <button onclick="verifyOTP()" id="verifyBtn" class="btn-main">تأكيد الهوية</button>
         </div>
 
         <div class="mt-12 text-center opacity-20">
@@ -86,8 +110,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD9wQsKHn4z0ERIny25UKXsiOhJBOZYmwo",
@@ -108,86 +132,67 @@
         let generatedOTP = "";
         let phoneNumber = "";
 
-        // --- التعديل الأساسي: مراقبة حالة الدخول ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // المستخدم مسجل دخوله فعلاً
-                console.log("User already logged in:", user.uid);
-                window.location.href = "dashboard.html";
-            } else {
-                // لا يوجد مستخدم، نخفي شاشة التحميل ونظهر الكارت
-                document.getElementById('loaderOverlay').classList.add('hidden');
-            }
-        });
+        // تسجيل جوجل
+        window.loginWithGoogle = async () => {
+            const btn = document.getElementById('googleBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader"></div> جاري التحقق...';
 
-        async function handleWelcome(uid, name) {
-            const welcomeDiv = document.getElementById('welcomeText');
-            try {
-                const userSnap = await getDoc(doc(db, "users", uid));
-                if (userSnap.exists()) {
-                    welcomeDiv.innerHTML = `<p class="text-purple-400 font-bold animate-pulse">مرحباً بعودتك، ${name || 'يا بطل'}</p>`;
-                } else {
-                    welcomeDiv.innerHTML = `<p class="text-green-400 font-bold">مرحباً بك في عائلة Calzy</p>`;
-                }
-            } catch(e) { console.error("Firebase Error:", e); }
-        }
-
-        document.getElementById('googleBtn').onclick = async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
+                
                 await setDoc(doc(db, "users", user.uid), {
                     name: user.displayName,
                     email: user.email,
                     lastLogin: serverTimestamp()
                 }, { merge: true });
-                window.location.href = "dashboard.html";
-            } catch (error) { 
-                alert("خطأ في جوجل: تأكد من تفعيل Google Auth"); 
+
+                window.location.href = "macs.html"; // تحويل فوري
+            } catch (error) {
+                console.error(error);
+                btn.disabled = false;
+                btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 ml-3"><span class="font-bold text-sm">استكمال بواسطة جوجل</span>';
+                alert("حدث خطأ في الاتصال بجوجل");
             }
         };
 
-        document.getElementById('sendBtn').onclick = async () => {
-            const input = document.getElementById('userPhone').value.trim();
-            if (!input) return alert("من فضلك أدخل رقم الهاتف");
+        // إرسال كود الواتساب
+        window.sendOTP = async () => {
+            const sendBtn = document.getElementById('sendBtn');
+            phoneNumber = document.getElementById('userPhone').value.trim();
             
-            phoneNumber = input;
+            if (!phoneNumber) return alert("برجاء إدخال الرقم");
             if (!phoneNumber.startsWith('20')) phoneNumber = '20' + phoneNumber.replace(/^0+/, '');
+
+            sendBtn.disabled = true;
+            sendBtn.innerText = "جاري الإرسال...";
+
             generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
             
-            const params = new URLSearchParams();
-            params.append("token", TOKEN);
-            params.append("to", phoneNumber);
-            params.append("body", `*CALZY OS | SECURITY*\n\nكود التحقق الخاص بك هو: *${generatedOTP}*`);
+            const params = new URLSearchParams({
+                "token": TOKEN,
+                "to": phoneNumber,
+                "body": `*CALZY OS | THE WARRIOR*\n\nكود الدخول الخاص بك: *${generatedOTP}*\n\nاستعد لكسر حدودك اليوم.`
+            });
 
             try {
-                const response = await fetch(API_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params 
-                });
-                if (response.ok) {
-                    document.getElementById('phoneStep').classList.add('hidden');
-                    document.getElementById('otpStep').classList.remove('hidden');
-                }
-            } catch (error) { alert("خطأ في الاتصال بسيرفر الرسائل"); }
+                await fetch(API_URL, { method: 'POST', body: params });
+                document.getElementById('phoneStep').classList.add('hidden');
+                document.getElementById('otpStep').classList.remove('hidden');
+            } catch (e) {
+                alert("فشل إرسال الرسالة");
+                sendBtn.disabled = false;
+                sendBtn.innerText = "دخول المحاربين";
+            }
         };
 
-        document.getElementById('verifyBtn').onclick = async () => {
-            const userCode = document.getElementById('otpInput').value.trim();
-            if (userCode === generatedOTP) {
-                // ملاحظة: الـ Phone OTP هنا لا ينشئ User في Firebase Auth تلقائياً بالطريقة دي
-                // لذا سنستخدم Firestore للتحقق اليدوي في الـ Dashboard لو لم يكن جوجل
-                await setDoc(doc(db, "users", phoneNumber), {
-                    phone: phoneNumber,
-                    lastLogin: serverTimestamp(),
-                    authType: 'phone'
-                }, { merge: true });
-                
-                sessionStorage.setItem('isManualAuth', 'true');
-                sessionStorage.setItem('userPhone', phoneNumber);
-                window.location.href = "dashboard.html";
+        // التحقق والتحويل
+        window.verifyOTP = () => {
+            const input = document.getElementById('otpInput').value;
+            if (input === generatedOTP) {
+                window.location.href = "macs.html"; // تحويل فوري
             } else {
                 alert("الكود غير صحيح");
             }
